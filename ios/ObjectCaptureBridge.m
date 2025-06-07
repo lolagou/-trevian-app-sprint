@@ -7,6 +7,8 @@
 // ObjectCaptureBridge.mm
 
 #import <React/RCTBridgeModule.h>
-#import "trevianappsprint-Swift.h"
 
-RCT_EXTERN_MODULE(ObjectCaptureModule, NSObject)
+@interface RCT_EXTERN_MODULE(ObjectCaptureModule, NSObject)
+RCT_EXTERN_METHOD(startObjectCapture: (RCTPromiseResolveBlock)resolve
+                  rejecter: (RCTPromiseRejectBlock)reject)
+@end

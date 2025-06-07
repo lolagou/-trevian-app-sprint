@@ -14,7 +14,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.lolagou.trevianappsprint"
+      "bundleIdentifier": "com.ort.trevian"
     },
     "android": {
       "adaptiveIcon": {
@@ -29,6 +29,12 @@
     },
     "plugins": [
       "expo-router"
-    ]
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "66cf9dd4-10f8-4145-b353-5348f1f38006"
+      }
+    }
   }
 }
