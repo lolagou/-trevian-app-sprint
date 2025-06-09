@@ -1,14 +1,10 @@
-
+// app/scan.tsx
 import { View, Text, Pressable, Alert, StyleSheet, Animated, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useRef } from 'react';
 
-const ObjectCaptureModule = {
-  startObjectCapture: async () => {
-    await new Promise(resolve => setTimeout(resolve, 500));
-    return 'file:///fake/path/model.usdz';
-  },
-};
+// Módulo nativo de captura de objetos (LiDAR)
+import { ObjectCaptureModule } from '../nativeModules/ObjectCaptureModule';
 
 export default function Scan() {
   const router = useRouter();
@@ -28,17 +24,22 @@ export default function Scan() {
         const filePath = await ObjectCaptureModule.startObjectCapture();
         router.push({ pathname: '/result', params: { filePath } });
       } else {
-        Alert.alert('Error', 'Esta función solo está disponible en iOS');
+        Alert.alert('Error', 'Esta función solo está disponible en iOS.');
       }
     } catch (err) {
-      Alert.alert('Error', 'Ocurrió un problema al capturar el objeto');
+      console.error('Error de captura:', err);
+      Alert.alert('Error', 'Ocurrió un problema al capturar el objeto.');
     }
+  };
+
+  const goToHome = () => {
+    router.push('/');
   };
 
   return (
     <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
       <View style={styles.progressBarContainer}>
-        <View style={styles.checkbox} />
+        <Pressable style={styles.checkbox} onPress={goToHome} />
         <View style={styles.progressText} />
       </View>
       <View style={styles.progressBarTrack}>

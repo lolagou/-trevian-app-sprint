@@ -1,4 +1,4 @@
-
+// app/result.tsx
 import { View, Text, Pressable, Alert, StyleSheet, Animated } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useRef } from 'react';
@@ -18,63 +18,50 @@ export default function Result() {
 
   const handleUpload = async () => {
     try {
-      const formData = new FormData();
-      formData.append('file', {
-        uri: filePath as string,
-        name: 'model.usdz',
-        type: 'model/vnd.usdz+zip',
-      } as any);
-
-      const response = await fetch('https://trevian-server.vercel.app/api/upload', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-        body: formData,
+      const response = await fetch('https://trevian-server.vercel.app', {
+        method: 'GET',
       });
 
-      const result = await response.json();
+      const text = await response.text();
 
       if (response.ok) {
-        Alert.alert('Éxito', 'Archivo enviado correctamente');
+        Alert.alert('Servidor activo', text);
       } else {
-        Alert.alert('Error', result?.message || 'Error al subir el archivo');
+        Alert.alert('Error', 'El servidor no respondió correctamente');
       }
     } catch (error) {
-      console.error('Upload error:', error);
-      Alert.alert('Error', 'No se pudo enviar el archivo al servidor');
+      console.error('Error de conexión:', error);
+      Alert.alert('Error', 'No se pudo conectar al servidor');
     }
   };
 
   return (
     <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
       <View style={styles.progressBarContainer}>
-        <View style={styles.checkbox} />
+        <Pressable style={styles.checkbox} onPress={() => router.push('/')} />
         <View style={styles.progressText} />
       </View>
       <View style={styles.progressBarTrack}>
         <View style={styles.progressBarFill} />
       </View>
-
       <View style={styles.card}>
         <View style={styles.fileBox}>
-          <Text style={styles.label}>Archivo generado:</Text>
-          <Text style={styles.filePath} numberOfLines={1} ellipsizeMode="middle">
-            {filePath as string}
-          </Text>
+          <Text style={styles.label}>Archivo escaneado listo para subir:</Text>
+          <Text style={styles.filePath}>{filePath ? (filePath as string) : 'No hay archivo'}</Text>
         </View>
         <View style={styles.actions}>
-          <Pressable style={styles.cancelButton} onPress={() => router.back()}>
+          <Pressable style={styles.cancelButton} onPress={() => router.push('/scan')}>
             <Text style={styles.cancelText}>Volver</Text>
           </Pressable>
           <Pressable style={styles.confirmButton} onPress={handleUpload}>
-            <Text style={styles.confirmText}>Crear Plantilla</Text>
+            <Text style={styles.confirmText}>Probar servidor</Text>
           </Pressable>
         </View>
       </View>
     </Animated.View>
   );
 }
+
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#030026', padding: 24 },
   progressBarContainer: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 },
