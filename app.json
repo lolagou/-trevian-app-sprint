@@ -14,7 +14,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "00008120-001A446E0A98201E"
+      "bundleIdentifier": "com.lolagou"
     },
     "android": {
       "adaptiveIcon": {
