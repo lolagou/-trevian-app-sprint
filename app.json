@@ -22,7 +22,7 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.lolagou.trevianappsprint"
+      "package": "com.lolagou"
     },
     "web": {
       "favicon": "./assets/favicon.png"
