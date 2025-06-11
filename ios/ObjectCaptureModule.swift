@@ -1,10 +1,3 @@
-//
-//  ObjectCaptureModule.swift
-//  trevianappsprint
-//
-//  Created by Lola Nuñez Gouget on 6/6/25.
-//
-
 import Foundation
 import SwiftUI
 
@@ -15,18 +8,23 @@ class ObjectCaptureModule: NSObject {
   func startObjectCapture(_ resolve: @escaping RCTPromiseResolveBlock,
                           rejecter reject: @escaping RCTPromiseRejectBlock) {
     DispatchQueue.main.async {
-      guard let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-            let window = scene.windows.first,
-            let rootVC = window.rootViewController else {
-        reject("NO_ROOT", "No se encontró rootViewController", nil)
+      // Asegura que haya una ventana activa visible
+      guard
+        let scene = UIApplication.shared.connectedScenes
+          .compactMap({ $0 as? UIWindowScene }).first,
+        let window = scene.windows.first(where: { $0.isKeyWindow }),
+        let rootVC = window.rootViewController
+      else {
+        reject("NO_ROOT", "No se encontró una ventana activa para presentar el VC", nil)
         return
       }
 
-      let swiftVC = UIHostingController(rootView: ContentView())
-      rootVC.present(swiftVC, animated: true)
+      let scanView = ContentView()
+      let vc = UIHostingController(rootView: scanView)
+      rootVC.present(vc, animated: true)
 
-      // Resolución ficticia por ahora
-      resolve("file:///path/to/model.usdz")
+      // Simulación del path resultante
+      resolve("file:///dummy/path/model.usdz")
     }
   }
 }

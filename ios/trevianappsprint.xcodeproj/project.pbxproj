@@ -186,7 +186,6 @@
 				LastUpgradeCheck = 1130;
 				TargetAttributes = {
 					13B07F861A680F5B00A75B9A = {
-						DevelopmentTeam = 47S7DJ46W6;
 						LastSwiftMigration = 1250;
 						ProvisioningStyle = Automatic;
 					};
@@ -367,7 +366,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 47S7DJ46W6;
+				DEVELOPMENT_TEAM = BB7X95ZXWZ;
 				ENABLE_BITCODE = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
@@ -386,7 +385,7 @@
 					"-lc++",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
-				PRODUCT_BUNDLE_IDENTIFIER = com.lolagou.trevianappsprint;
+				PRODUCT_BUNDLE_IDENTIFIER = com.lolagou;
 				PRODUCT_NAME = trevianappsprint;
 				SWIFT_OBJC_BRIDGING_HEADER = "trevianappsprint/trevianappsprint-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -406,7 +405,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 47S7DJ46W6;
+				DEVELOPMENT_TEAM = BB7X95ZXWZ;
 				INFOPLIST_FILE = trevianappsprint/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -420,7 +419,7 @@
 					"-lc++",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
-				PRODUCT_BUNDLE_IDENTIFIER = com.lolagou.trevianappsprint;
+				PRODUCT_BUNDLE_IDENTIFIER = com.lolagou;
 				PRODUCT_NAME = trevianappsprint;
 				SWIFT_OBJC_BRIDGING_HEADER = "trevianappsprint/trevianappsprint-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
