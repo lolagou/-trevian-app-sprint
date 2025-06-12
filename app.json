@@ -1,6 +1,7 @@
 {
   "expo": {
     "name": "trevian-app-sprint",
+    "scheme": "trevian",
     "slug": "trevian-app-sprint",
     "version": "1.0.0",
     "orientation": "portrait",
