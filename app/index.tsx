@@ -1,13 +1,15 @@
 import { View, Text, Pressable, Image, StyleSheet, Animated } from 'react-native';
 import { useRouter } from 'expo-router';
-import React, { useRef } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Home() {
   const router = useRouter();
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const translateY = useRef(new Animated.Value(20)).current;
+  const [loading, setLoading] = useState(true);
 
-  React.useEffect(() => {
+  useEffect(() => {
     Animated.timing(fadeAnim, {
       toValue: 1,
       duration: 800,
@@ -19,7 +21,20 @@ export default function Home() {
       duration: 800,
       useNativeDriver: true,
     }).start();
+
+    const checkUserID = async () => {
+      const userId = await AsyncStorage.getItem('userID');
+      if (userId) {
+        router.replace('/dashboard'); // ir directo al dashboard si ya está logueado
+      } else {
+        setLoading(false); // mostrar botón si no hay sesión
+      }
+    };
+
+    checkUserID();
   }, []);
+
+  if (loading) return null;
 
   return (
     <View style={styles.container}>
@@ -34,7 +49,8 @@ export default function Home() {
           ))}
         </View>
       </Animated.View>
-      <Pressable style={styles.button} onPress={() => router.push('/scan')}>
+
+      <Pressable style={styles.button} onPress={() => router.push('/login')}>
         <Text style={styles.buttonText}>Empezar</Text>
       </Pressable>
     </View>
