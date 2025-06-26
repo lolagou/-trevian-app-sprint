@@ -12,7 +12,7 @@ struct ContentView: View {
     @State private var quickLookIsPresented = false
     
     @State private var passCount: Int = 0
-    private let maxPasses = 2
+    private let maxPasses = 1
     
     var modelPath: URL? {
         return modelFolderPath?.appending(path: "model.usdz")
@@ -94,6 +94,7 @@ struct ContentView: View {
         .sheet(isPresented: $quickLookIsPresented) {
             if let modelPath {
                 ARQuickLookView(modelFile: modelPath) {
+
                     resetAll()
                 }
             }
@@ -247,7 +248,10 @@ struct ContentView: View {
                     print("✅ Photogrammetry completada. Mostrando QuickLook.")
                     isProgressing = false
                     photogrammetrySession = nil
+                    let modelPath = modelDir.appendingPathComponent("model.usdz")
                     quickLookIsPresented = true
+                    await uploadUSDZToBackend(fileURL: modelPath)
+
                 default:
                     break
                 }
@@ -284,5 +288,48 @@ struct ContentView: View {
         
         rootImageFolder = nil
         modelFolderPath = nil
+    }
+}
+
+func uploadUSDZToBackend(fileURL: URL) async {
+    print("ajbsdkhfjhgdfsjkhsagfkjhagsdfkjhg")
+    let uploadURL = URL(string: "http://localhost:3000/modelo")! 
+
+    var request = URLRequest(url: uploadURL)
+    request.httpMethod = "POST"
+
+    let boundary = UUID().uuidString
+    request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+
+    guard let fileData = try? Data(contentsOf: fileURL) else {
+        print("❌ No se pudo leer el archivo USDZ.")
+        return
+    }
+
+    var body = Data()
+    let filename = "modelo.usdz"
+    let mimetype = "model/vnd.usdz+zip"
+
+    body.append("--\(boundary)\r\n".data(using: .utf8)!)
+    body.append("Content-Disposition: form-data; name=\"file\"; filename=\"\(filename)\"\r\n".data(using: .utf8)!)
+    body.append("Content-Type: \(mimetype)\r\n\r\n".data(using: .utf8)!)
+    body.append(fileData)
+    body.append("\r\n".data(using: .utf8)!)
+    body.append("--\(boundary)--\r\n".data(using: .utf8)!)
+
+    request.httpBody = body
+
+    do {
+        let (data, response) = try await URLSession.shared.data(for: request)
+        if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 {
+            print("✅ Modelo subido con éxito.")
+        } else {
+            print("❌ Error en la respuesta: \(response)")
+            if let string = String(data: data, encoding: .utf8) {
+                print("ℹ️ Backend dijo: \(string)")
+            }
+        }
+    } catch {
+        print("❌ Error al subir el archivo: \(error.localizedDescription)")
     }
 }
