@@ -2,10 +2,15 @@
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "strict": true,
+    "jsx": "react-jsx",
+    "lib": ["dom", "es2021"],
+    "moduleResolution": "bundler",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "types": ["expo", "expo-router"],
     "baseUrl": ".",
     "paths": {
       "~/*": ["./*"]
-    },
-    "types": ["expo-router"]
+    }
   }
 }

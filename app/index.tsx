@@ -1,83 +1,243 @@
-import { View, Image, StyleSheet, Animated } from 'react-native';
-import { useRouter } from 'expo-router';
 import React, { useRef, useEffect, useState } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import InsoleModel from '../components/InsoleModel'; 
+import {
+  View,
+  Text,
+  StyleSheet,
+  Animated,
+  TouchableOpacity,
+  Image,
+  Switch,
+} from 'react-native';
+import { GLView } from 'expo-gl';
+import { useRouter } from 'expo-router';
+import * as THREE from 'three';
+import { Renderer } from 'expo-three';
+import { LinearGradient } from 'expo-linear-gradient';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-export default function Home() {
+export default function IndexScreen() {
   const router = useRouter();
-  const [show3DModel, setShow3DModel] = useState(false);
+  const [showLogo, setShowLogo] = useState(true);
+  const [showShadow, setShowShadow] = useState(false);
+  const [showCube, setShowCube] = useState(false);
+  const [showUI, setShowUI] = useState(false);
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const uiY = useRef(new Animated.Value(100)).current;
+  const cubeY = useRef(new Animated.Value(200)).current;
+  const [isDarkMode, setIsDarkMode] = useState(true);
 
-  const fadeAnimLogo = useRef(new Animated.Value(0)).current;
-  const translateYLogo = useRef(new Animated.Value(20)).current;
+  const toggleTheme = () => {
+    setIsDarkMode((prev) => !prev);
+  };
 
   useEffect(() => {
-    // Animar entrada del logo
-    Animated.parallel([
-      Animated.timing(fadeAnimLogo, {
-        toValue: 1,
-        duration: 1000,
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 1200,
+      useNativeDriver: true,
+    }).start();
+
+    const timer1 = setTimeout(() => setShowLogo(false), 2000);
+    const timer2 = setTimeout(() => setShowShadow(true), 2000);
+    const timer3 = setTimeout(() => setShowCube(true), 3700);
+    const timer4 = setTimeout(() => {
+      Animated.timing(cubeY, {
+        toValue: 0,
+        duration: 800,
         useNativeDriver: true,
-      }),
-      Animated.timing(translateYLogo, {
+      }).start();
+    }, 3900);
+    const timer5 = setTimeout(() => {
+      Animated.timing(uiY, {
         toValue: 0,
         duration: 1000,
         useNativeDriver: true,
-      }),
-    ]).start();
-
-    // Mostrar modelo 3D después de 2s
-    const modelTimeout = setTimeout(() => {
-      setShow3DModel(true);
-    }, 2000);
-
-    // Redirección después de 5s
-    const redirectTimeout = setTimeout(async () => {
-      const userId = await AsyncStorage.getItem('userID');
-      router.replace(userId ? '/dashboard' : '/login');
-    }, 5000);
+      }).start();
+      setShowUI(true);
+    }, 4800);
 
     return () => {
-      clearTimeout(modelTimeout);
-      clearTimeout(redirectTimeout);
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+      clearTimeout(timer3);
+      clearTimeout(timer4);
+      clearTimeout(timer5);
     };
   }, []);
 
-  return (
-    <View style={styles.container}>
-      {/* Logo Trevian centrado */}
-      {!show3DModel && (
-        <Animated.View style={{ opacity: fadeAnimLogo, transform: [{ translateY: translateYLogo }] }}>
-          <Image source={require('../assets/logo.png')} style={styles.logo} resizeMode="contain" />
-        </Animated.View>
-      )}
+  const backgroundColor = isDarkMode ? '#02001A' : '#CBFFEF';
+  const lineColor = isDarkMode ? '#CBFFEF' : '#05003F';
+  const buttonBackground = isDarkMode ? '#6DFFD5' : '#05003F';
+  const buttonTextColor = isDarkMode ? '#05003F' : '#CBFFEF';
+  const cubeColor = isDarkMode ? '#CBFFEF' : '#05003F';
+  const shadowSource = isDarkMode
+    ? require('../assets/shadow-dark.png')
+    : require('../assets/shadow-light.png');
 
-      {/* Modelo 3D entrando desde abajo */}
-      {show3DModel && (
-        <View style={styles.modelContainer}>
-          <InsoleModel />
+  return (
+    <LinearGradient colors={[backgroundColor, backgroundColor]} style={styles.container}>
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.themeToggleContainer}>
+          <Text style={{ color: lineColor, fontWeight: 'bold', marginRight: 10 }}>
+            {isDarkMode ? 'Oscuro' : 'Claro'}
+          </Text>
+          <Switch
+            value={isDarkMode}
+            onValueChange={toggleTheme}
+            trackColor={{ false: '#CBFFEF', true: '#6DFFD5' }}
+            thumbColor={isDarkMode ? '#05003F' : '#6DFFD5'}
+          />
         </View>
-      )}
-    </View>
+
+        {showLogo && (
+          <Animated.View style={[styles.logoContainer, { opacity: fadeAnim }]}> 
+            <Image
+              source={isDarkMode ? require('../assets/logo.png') : require('../assets/logo-oscuro.png')}
+              style={styles.logo}
+              resizeMode="contain"
+            />
+          </Animated.View>
+        )}
+
+        {showShadow && (
+          <Image source={shadowSource} style={styles.shadowImage} resizeMode="contain" />
+        )}
+
+        {showCube && (
+          <Animated.View
+            style={{
+              transform: [{ translateY: cubeY }],
+              position: 'absolute',
+              top: '22%',
+              width: '100%',
+              height: 320,
+              zIndex: 20,
+            }}
+          >
+            <GLView
+              key={isDarkMode ? 'dark' : 'light'}
+              style={{ width: '100%', height: '100%' }}
+              onContextCreate={async (gl) => {
+                const scene = new THREE.Scene();
+                scene.background = new THREE.Color(backgroundColor);
+
+                const camera = new THREE.PerspectiveCamera(
+                  75,
+                  gl.drawingBufferWidth / gl.drawingBufferHeight,
+                  0.1,
+                  1000
+                );
+                camera.position.z = 4;
+
+                const renderer = new Renderer({ gl });
+                renderer.setSize(gl.drawingBufferWidth, gl.drawingBufferHeight);
+
+                const geometry = new THREE.BoxGeometry(2.2, 2.2, 2.2);
+                const material = new THREE.MeshStandardMaterial({ color: cubeColor });
+                const cube = new THREE.Mesh(geometry, material);
+                scene.add(cube);
+
+                const ambientLight = new THREE.AmbientLight(cubeColor, 1.5);
+                scene.add(ambientLight);
+
+                const directionalLight = new THREE.DirectionalLight(cubeColor, 1);
+                directionalLight.position.set(2, 2, 5);
+                scene.add(directionalLight);
+
+                cube.position.y = 0;
+
+                const animate = () => {
+                  requestAnimationFrame(animate);
+                  cube.rotation.x += 0.01;
+                  cube.rotation.y += 0.01;
+                  renderer.render(scene, camera);
+                  gl.endFrameEXP();
+                };
+
+                animate();
+              }}
+            />
+          </Animated.View>
+        )}
+
+        {showUI && (
+          <Animated.View style={{ transform: [{ translateY: uiY }], alignItems: 'center', zIndex: 30, marginTop: 350 }}>
+            <View style={styles.decorativeLines}>
+              <View style={[styles.line, { backgroundColor: lineColor, opacity: 0.2 }]} />
+              <View style={[styles.line, { backgroundColor: lineColor, opacity: 0.2 }]} />
+              <View style={[styles.line, { backgroundColor: lineColor, opacity: 0.2 }]} />
+            </View>
+
+            <TouchableOpacity
+              style={[styles.button, { backgroundColor: buttonBackground, shadowColor: buttonBackground }]}
+              onPress={() => router.push('/login')}
+            >
+              <Text style={[styles.buttonText, { color: buttonTextColor }]}>CREÁ TU PLANTILLA</Text>
+            </TouchableOpacity>
+          </Animated.View>
+        )}
+      </SafeAreaView>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#05003F',
+  },
+  safeArea: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  themeToggleContainer: {
+    position: 'absolute',
+    top: 40,
+    right: 20,
+    zIndex: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  logoContainer: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
   logo: {
-    width: 140,
-    height: 140,
+    width: 120,
+    height: 36,
   },
-  modelContainer: {
-    position: 'absolute',
-    bottom: 0,
-    top: 0,
+  glView: {
     width: '100%',
-    height: '100%',
+    height: 320,
+  },
+  shadowImage: {
+    position: 'absolute',
+    top: '64%',
+    width: 250,
+    height: 70,
+    alignSelf: 'center',
+    zIndex: 10,
+    opacity: 0.7,
+  },
+  decorativeLines: {
+    marginBottom: 40,
+    alignItems: 'center',
+    gap: 6,
+  },
+  line: {
+    width: 280,
+    height: 6,
+    borderRadius: 4,
+  },
+  button: {
+    paddingVertical: 11,
+    paddingHorizontal: 64,
+    borderRadius: 12,
+    marginTop: 10,
+  },
+  buttonText: {
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
