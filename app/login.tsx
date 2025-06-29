@@ -115,6 +115,7 @@ import {
     label: {
       color: '#CBFFEF',
       fontSize: 14,
+      fontWeight: 'bold',
       marginBottom: 4,
     },
     input: {
