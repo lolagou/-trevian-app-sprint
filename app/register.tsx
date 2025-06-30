@@ -44,7 +44,7 @@ import {
         style={styles.gradient}
       >
         <Animated.View style={{ opacity: fadeAnim }}>
-          <Text style={styles.header}>REGISTER</Text>
+          <Text style={styles.header}>REGISTRATE</Text>
   
           <View style={styles.form}>
             <Text style={styles.label}>NOMBRE:</Text>
@@ -57,7 +57,25 @@ import {
               keyboardType="email-address"
             />
   
-            <Text style={styles.label}>CONTRASEÑA:</Text>
+            <Text style={styles.label}>APELLIDO:</Text>
+            <TextInput
+              style={styles.input}
+              placeholderTextColor="#9AA"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+            />
+
+<Text style={styles.label}>MAIL:</Text>
+            <TextInput
+              style={styles.input}
+              placeholderTextColor="#9AA"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+            />
+
+<Text style={styles.label}>CONTRASEÑA:</Text>
             <TextInput
               style={styles.input}
               placeholderTextColor="#9AA"
@@ -67,20 +85,16 @@ import {
             />
   
             <Pressable style={styles.registerButton} onPress={handleRegister}>
-              <Text style={styles.registerButtonText}>REGISTER</Text>
+              <Text style={styles.registerButtonText}>REGISTRATE</Text>
             </Pressable>
-  
-            <Pressable style={styles.altButton} onPress={() => Alert.alert('Google')}>
-              <Text style={styles.altButtonText}>Inicia sesión con Google</Text>
-            </Pressable>
-  
-            <Pressable style={styles.altButton} onPress={() => Alert.alert('Apple')}>
-              <Text style={styles.altButtonText}>Inicia sesión con Apple</Text>
-            </Pressable>
+
   
             <Text style={styles.registerText}>
-              Si todavía no tenés cuenta, <Text style={styles.link}>registrate!</Text>
-            </Text>
+  Si tenés cuenta,{' '}
+  <Text style={styles.link} onPress={() => router.push('/login')}>
+    logueate!
+  </Text>
+</Text>
           </View>
   
           <View style={styles.logoContainer}>

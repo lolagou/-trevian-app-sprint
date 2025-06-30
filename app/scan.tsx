@@ -1,10 +1,15 @@
-// app/scan.tsx
-import { View, Text, Pressable, Alert, StyleSheet, Animated, Platform } from 'react-native';
-import { useRouter } from 'expo-router';
 import React, { useEffect, useRef } from 'react';
-
-// Módulo nativo de captura de objetos (LiDAR)
-import { ObjectCaptureModule } from '../nativeModules/ObjectCaptureModule';
+import {
+  View,
+  Text,
+  Pressable,
+  Alert,
+  StyleSheet,
+  Animated,
+  Platform,
+} from 'react-native';
+import { useRouter } from 'expo-router';
+import { ObjectCaptureModule } from '../nativeModules/ObjectCaptureModule'; 
 
 export default function Scan() {
   const router = useRouter();
@@ -22,9 +27,10 @@ export default function Scan() {
     try {
       if (Platform.OS === 'ios') {
         const filePath = await ObjectCaptureModule.startObjectCapture();
+        console.log('Archivo capturado en:', filePath);
         router.push({ pathname: '/result', params: { filePath } });
       } else {
-        Alert.alert('Error', 'Esta función solo está disponible en iOS.');
+        Alert.alert('Función no disponible', 'Solo funciona en iPhones con LiDAR');
       }
     } catch (err) {
       console.error('Error de captura:', err);
@@ -32,53 +38,52 @@ export default function Scan() {
     }
   };
 
-  const goToHome = () => {
-    router.push('/');
-  };
-
   return (
     <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
-      <View style={styles.progressBarContainer}>
-        <Pressable style={styles.checkbox} onPress={goToHome} />
-        <View style={styles.progressText} />
-      </View>
-      <View style={styles.progressBarTrack}>
-        <View style={styles.progressBarFill} />
-      </View>
-      <View style={styles.card}>
-        <View style={styles.imagePlaceholder}>
-          <Text style={styles.placeholderText}>[ Imagen del objeto escaneado ]</Text>
-        </View>
-        <View style={styles.barLarge} />
-        <View style={styles.barSmall} />
-        <Pressable style={styles.button} onPress={handleScan}>
-          <Text style={styles.buttonText}>Abrir Cámara</Text>
-        </Pressable>
-      </View>
+      <View style={styles.topBar} />
+      <View style={styles.captureFrame} />
+      <Pressable style={styles.button} onPress={handleScan}>
+        <Text style={styles.buttonText}>CONTINUAR</Text>
+      </Pressable>
     </Animated.View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#030026', padding: 24 },
-  progressBarContainer: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 },
-  checkbox: { width: 20, height: 20, borderWidth: 1, borderColor: '#CBFFEF', borderRadius: 4 },
-  progressText: { height: 12, width: '80%', backgroundColor: '#CBFFEF', borderRadius: 6 },
-  progressBarTrack: { height: 4, backgroundColor: '#05003F' },
-  progressBarFill: { height: 4, width: '33%', backgroundColor: '#6DFFD5' },
-  card: { backgroundColor: '#05003F', marginTop: 32, padding: 16, borderRadius: 16 },
-  imagePlaceholder: {
-    borderColor: '#CBFFEF',
-    borderWidth: 1,
-    borderRadius: 12,
+  container: {
+    flex: 1,
+    backgroundColor: '#020016',
     padding: 24,
-    aspectRatio: 1,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
   },
-  placeholderText: { color: '#CBFFEF', textAlign: 'center' },
-  barLarge: { backgroundColor: '#CBFFEF', height: 16, borderRadius: 6, marginTop: 24, marginBottom: 8 },
-  barSmall: { backgroundColor: '#CBFFEF', height: 12, borderRadius: 6, marginBottom: 16, width: '66%' },
-  button: { backgroundColor: '#6DFFD5', padding: 12, borderRadius: 12 },
-  buttonText: { textAlign: 'center', fontWeight: 'bold', color: '#000' },
+  topBar: {
+    marginTop: 60,
+    width: '60%',
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: '#8D9DA6',
+  },
+  captureFrame: {
+    flex: 1,
+    width: '100%',
+    borderWidth: 2,
+    borderColor: '#CBFFEF',
+    borderRadius: 10,
+    marginVertical: 40,
+  },
+  button: {
+    backgroundColor: '#6DFFD5',
+    paddingVertical: 14,
+    paddingHorizontal: 50,
+    borderRadius: 12,
+    marginBottom: 40,
+    alignSelf: 'center',
+  },
+  buttonText: {
+    color: '#020016',
+    fontWeight: 'bold',
+    fontSize: 16,
+    textAlign: 'center',
+  },
 });

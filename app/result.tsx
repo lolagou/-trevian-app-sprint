@@ -38,7 +38,7 @@ export default function Result() {
   return (
     <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
       <View style={styles.progressBarContainer}>
-        <Pressable style={styles.checkbox} onPress={() => router.push('/')} />
+        <Pressable style={styles.checkbox} onPress={() => router.push('/scan')} />
         <View style={styles.progressText} />
       </View>
       <View style={styles.progressBarTrack}>

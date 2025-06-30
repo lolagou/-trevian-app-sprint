@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Dimensions, Switch } from 'react-native';
+import { View, StyleSheet, Dimensions, Switch, TouchableOpacity } from 'react-native';
+import { useRouter } from 'expo-router';
 
 const { width } = Dimensions.get('window');
 
 export default function Dashboard() {
   const [darkMode, setDarkMode] = useState(true);
+  const router = useRouter();
 
   const theme = {
     backgroundColor: darkMode ? '#020016' : '#CBFFEF',
@@ -17,7 +19,8 @@ export default function Dashboard() {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.backgroundColor }]}>
-
+      
+      {/* Switch para modo claro/oscuro */}
       <View style={styles.switchContainer}>
         <Switch
           value={!darkMode}
@@ -27,21 +30,27 @@ export default function Dashboard() {
         />
       </View>
 
+      {/* Top: cuadrado (botón atrás) + círculo */}
       <View style={styles.topRow}>
-        <View style={[styles.square, { backgroundColor: theme.boxBorderColor }]} />
+        <TouchableOpacity onPress={() => router.back()}>
+          <View style={[styles.square, { backgroundColor: theme.boxBorderColor }]} />
+        </TouchableOpacity>
+
         <View style={[styles.circle, { backgroundColor: theme.circleColor }]} />
       </View>
 
+      {/* Barras */}
       <View style={[styles.lineShort, { backgroundColor: theme.lineShort }]} />
       <View style={[styles.lineLong, { backgroundColor: theme.lineLong }]} />
 
-
+      {/* Cuadrícula 2x2 */}
       <View style={styles.grid}>
         {[...Array(4)].map((_, i) => (
           <View key={i} style={[styles.smallBox, { borderColor: theme.boxBorderColor }]} />
         ))}
       </View>
 
+      {/* Caja grande */}
       <View style={[styles.largeBox, { borderColor: theme.boxBorderColor }]} />
     </View>
   );
@@ -94,7 +103,7 @@ const styles = StyleSheet.create({
     width: (width - 64) / 2,
     height: 91,
     backgroundColor: 'transparent',
-    borderWidth: 2,
+    borderWidth: 3,
     borderRadius: 12,
     marginBottom: 12,
   },
@@ -102,7 +111,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 91,
     backgroundColor: 'transparent',
-    borderWidth: 2,
+    borderWidth: 3,
     borderRadius: 12,
     marginTop: 12,
   },

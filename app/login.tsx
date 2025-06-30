@@ -30,7 +30,7 @@ import {
     const handleLogin = async () => {
       if (email === '1234' && password === '1234') {
         await AsyncStorage.setItem('userID', email);
-        router.replace('/dashboard');
+        router.replace('/unlocked');
       } else {
         Alert.alert('Error de inicio de sesión', 'Mail o contraseña incorrectos');
       }
@@ -79,8 +79,11 @@ import {
             </Pressable>
   
             <Text style={styles.registerText}>
-              Si todavía no tenés cuenta, <Text style={styles.link}>registrate!</Text>
-            </Text>
+  Si todavía no tenés cuenta,{' '}
+  <Text style={styles.link} onPress={() => router.push('/register')}>
+    registrate!
+  </Text>
+</Text>
           </View>
   
           <View style={styles.logoContainer}>
