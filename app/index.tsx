@@ -170,7 +170,7 @@ export default function IndexScreen() {
 
             <TouchableOpacity
               style={[styles.button, { backgroundColor: buttonBackground, shadowColor: buttonBackground }]}
-              onPress={() => router.push('/login')}
+              onPress={() => router.push('/mustlogin')}
             >
               <Text style={[styles.buttonText, { color: buttonTextColor }]}>CREÁ TU PLANTILLA</Text>
             </TouchableOpacity>
