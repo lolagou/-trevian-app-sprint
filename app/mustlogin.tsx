@@ -1,13 +1,13 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, Image, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
+import CustomButton from '../components/CustomButton'; // Asegurate de que la ruta sea correcta
 
 export default function MustLogin() {
   const router = useRouter();
 
   return (
     <View style={styles.container}>
-
       <Image
         source={require('../assets/padlock.png')} 
         style={styles.lockImage}
@@ -18,19 +18,17 @@ export default function MustLogin() {
         Para crear tu plantilla tendrás que{'\n'}iniciar sesión o registrarte
       </Text>
 
-      <TouchableOpacity
-        style={styles.primaryButton}
+      <CustomButton
+        text="INICIAR SESIÓN"
         onPress={() => router.push('/login')}
-      >
-        <Text style={styles.primaryButtonText}>INICIAR SESIÓN</Text>
-      </TouchableOpacity>
+      />
 
-      <TouchableOpacity
-        style={styles.secondaryButton}
+      <CustomButton
+        text="REGISTRARSE"
+        variant="outline"
         onPress={() => router.push('/register')}
-      >
-        <Text style={styles.secondaryButtonText}>REGISTRARSE</Text>
-      </TouchableOpacity>
+        style={{ marginTop: 16 }}
+      />
     </View>
   );
 }
@@ -43,13 +41,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 24,
   },
-  header: {
-    position: 'absolute',
-    top: 60,
-    left: 24,
-    fontSize: 16,
-    color: '#9E9E9E',
-  },
   lockImage: {
     width: 200,
     height: 200,
@@ -60,29 +51,5 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 16,
     marginBottom: 40,
-  },
-  primaryButton: {
-    backgroundColor: '#6DFFD5',
-    paddingVertical: 14,
-    paddingHorizontal: 50,
-    borderRadius: 12,
-    marginBottom: 16,
-  },
-  primaryButtonText: {
-    color: '#020016',
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-  secondaryButton: {
-    borderWidth: 2,
-    borderColor: '#6DFFD5',
-    paddingVertical: 14,
-    paddingHorizontal: 50,
-    borderRadius: 12,
-  },
-  secondaryButtonText: {
-    color: '#6DFFD5',
-    fontWeight: 'bold',
-    fontSize: 16,
   },
 });

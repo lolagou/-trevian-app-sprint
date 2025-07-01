@@ -1,7 +1,16 @@
-// app/result.tsx
-import { View, Text, Pressable, Alert, StyleSheet, Animated } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useRef } from 'react';
+import {
+  View,
+  Text,
+  Alert,
+  StyleSheet,
+  Animated,
+} from 'react-native';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+
+import DashboardButton from '../components/DashboardButton';
+import CTAButton from '../components/CTAButton';
+import OutlineButton from '../components/OutlineButton';
 
 export default function Result() {
   const { filePath } = useLocalSearchParams();
@@ -37,25 +46,21 @@ export default function Result() {
 
   return (
     <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
-      <View style={styles.progressBarContainer}>
-        <Pressable style={styles.checkbox} onPress={() => router.push('/scan')} />
-        <View style={styles.progressText} />
-      </View>
-      <View style={styles.progressBarTrack}>
-        <View style={styles.progressBarFill} />
-      </View>
+      <DashboardButton onPress={() => router.push('/dashboard')} />
+
+
       <View style={styles.card}>
+        <Text style={styles.title}>Archivo escaneado listo</Text>
         <View style={styles.fileBox}>
-          <Text style={styles.label}>Archivo escaneado listo para subir:</Text>
-          <Text style={styles.filePath}>{filePath ? (filePath as string) : 'No hay archivo'}</Text>
+          <Text style={styles.label}>Ruta del archivo:</Text>
+          <Text style={styles.filePath}>
+            {filePath ? (filePath as string) : 'No hay archivo'}
+          </Text>
         </View>
+
         <View style={styles.actions}>
-          <Pressable style={styles.cancelButton} onPress={() => router.push('/scan')}>
-            <Text style={styles.cancelText}>Volver</Text>
-          </Pressable>
-          <Pressable style={styles.confirmButton} onPress={handleUpload}>
-            <Text style={styles.confirmText}>Probar servidor</Text>
-          </Pressable>
+          <OutlineButton label="VOLVER A ESCANEAR" onPress={() => router.push('/scan')}/>
+          <CTAButton label="ENVIAR" onPress={handleUpload} />
         </View>
       </View>
     </Animated.View>
@@ -63,19 +68,56 @@ export default function Result() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#030026', padding: 24 },
-  progressBarContainer: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 },
-  checkbox: { width: 20, height: 20, borderWidth: 1, borderColor: '#CBFFEF', borderRadius: 4 },
-  progressText: { height: 12, width: '80%', backgroundColor: '#CBFFEF', borderRadius: 6 },
-  progressBarTrack: { height: 4, backgroundColor: '#05003F' },
-  progressBarFill: { height: 4, width: '100%', backgroundColor: '#6DFFD5' },
-  card: { backgroundColor: '#05003F', marginTop: 32, padding: 16, borderRadius: 16 },
-  fileBox: { borderWidth: 1, borderColor: '#CBFFEF', borderRadius: 12, padding: 16 },
-  label: { color: '#CBFFEF', fontSize: 12 },
-  filePath: { color: '#fff', marginTop: 8 },
-  actions: { flexDirection: 'row', justifyContent: 'flex-end', gap: 12, marginTop: 24 },
-  cancelButton: { borderWidth: 1, borderColor: '#CBFFEF', paddingVertical: 8, paddingHorizontal: 16, borderRadius: 12 },
-  cancelText: { color: '#CBFFEF' },
-  confirmButton: { backgroundColor: '#6DFFD5', paddingVertical: 8, paddingHorizontal: 16, borderRadius: 12 },
-  confirmText: { color: '#000', fontWeight: 'bold' },
+  container: {
+    flex: 1,
+    backgroundColor: '#020016',
+    padding: 24,
+  },
+  progressBarContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginTop: 40,
+    marginBottom: 8,
+  },
+  progressText: {
+    height: 12,
+    width: '80%',
+    backgroundColor: '#CBFFEF',
+    borderRadius: 6,
+  },
+  card: {
+    backgroundColor: '#020016',
+    marginTop: 40,
+    padding: 20,
+    borderRadius: 20,
+  },
+  title: {
+    color: '#CBFFEF',
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  fileBox: {
+    borderWidth: 1,
+    borderColor: '#CBFFEF',
+    borderRadius: 12,
+    padding: 16,
+    backgroundColor: '#020016',
+  },
+  label: {
+    color: '#CBFFEF',
+    fontSize: 12,
+  },
+  filePath: {
+    color: '#fff',
+    marginTop: 8,
+    fontSize: 12,
+  },
+  actions: {
+    flexDirection: 'column',
+    gap: 12,
+    marginTop: 24,
+  },
 });
