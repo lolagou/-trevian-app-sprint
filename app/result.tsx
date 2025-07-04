@@ -27,22 +27,46 @@ export default function Result() {
 
   const handleUpload = async () => {
     try {
-      const response = await fetch('https://trevian-server.vercel.app', {
-        method: 'GET',
-      });
-
-      const text = await response.text();
-
-      if (response.ok) {
-        Alert.alert('Servidor activo', text);
-      } else {
-        Alert.alert('Error', 'El servidor no respondió correctamente');
+      if (!filePath) {
+        Alert.alert('Error', 'No hay archivo para subir');
+        return;
       }
+  
+      const formData = new FormData();
+  
+      formData.append('file', {
+        uri: filePath as string,
+        name: 'scan.usdz',
+        type: 'model/vnd.usdz+zip',
+      } as any);
+  
+      const response = await fetch('https://trevian-server.vercel.app/api/model/upload', { 
+        method: 'POST',
+        body: formData,
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+  
+      if (!response.ok) {
+        throw new Error('Falló la carga del archivo');
+      }
+  
+      const json = await response.json();
+      const modelURL = json.url; // ✅ Acá recibís la URL
+  
+      // 👇 Navegar a la nueva pantalla
+      router.push({
+        pathname: '/modelready',
+        params: { modelURL },
+      });
+  
     } catch (error) {
-      console.error('Error de conexión:', error);
-      Alert.alert('Error', 'No se pudo conectar al servidor');
+      console.error('❌ Error de conexión:', error);
+      Alert.alert('Error', 'No se pudo subir el archivo');
     }
-  };
+  };  
+  
 
   return (
     <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
