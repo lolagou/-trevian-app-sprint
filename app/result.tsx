@@ -71,6 +71,8 @@ export default function Result() {
   return (
     <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
       <DashboardButton onPress={() => router.push('/dashboard')} />
+      
+
 
 
       <View style={styles.card}>
@@ -85,6 +87,7 @@ export default function Result() {
         <View style={styles.actions}>
           <OutlineButton label="VOLVER A ESCANEAR" onPress={() => router.push('/scan')}/>
           <CTAButton label="ENVIAR" onPress={handleUpload} />
+          <CTAButton label="PROBAR MODELREADY" onPress={() => router.push('/modelready')} />
         </View>
       </View>
     </Animated.View>

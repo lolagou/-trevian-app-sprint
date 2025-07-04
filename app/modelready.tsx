@@ -6,7 +6,8 @@ export default function ModelReady() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>✅ ¡Tu modelo ya está hecho!</Text>
+
+      <Text style={styles.title}>¡Tu modelo ya está hecho!</Text>
       <Text style={styles.subtitle}>Ingresá tu domicilio para recibirlo:</Text>
 
       {/* Podés mostrar la URL si querés */}
