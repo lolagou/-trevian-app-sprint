@@ -8,6 +8,8 @@ import {
   Image,
   Switch,
 } from 'react-native';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import { Asset } from 'expo-asset';
 import { GLView } from 'expo-gl';
 import { useRouter } from 'expo-router';
 import * as THREE from 'three';
@@ -134,7 +136,7 @@ export default function IndexScreen() {
               onContextCreate={async (gl) => {
                 const scene = new THREE.Scene();
                 scene.background = null;
-
+              
                 const camera = new THREE.PerspectiveCamera(
                   75,
                   gl.drawingBufferWidth / gl.drawingBufferHeight,
@@ -142,34 +144,68 @@ export default function IndexScreen() {
                   1000
                 );
                 camera.position.z = 4;
-
+              
                 const renderer = new Renderer({ gl });
                 renderer.setSize(gl.drawingBufferWidth, gl.drawingBufferHeight);
-
-                const geometry = new THREE.BoxGeometry(2.2, 2.2, 2.2);
-                const material = new THREE.MeshStandardMaterial({ color: cubeColor });
-                const cube = new THREE.Mesh(geometry, material);
-                scene.add(cube);
-
-                const ambientLight = new THREE.AmbientLight(cubeColor, 1.5);
+              
+                const ambientLight = new THREE.AmbientLight(0xffffff, 1.2);
                 scene.add(ambientLight);
-
-                const directionalLight = new THREE.DirectionalLight(cubeColor, 1);
-                directionalLight.position.set(2, 2, 5);
+              
+                const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+                directionalLight.position.set(5, 5, 5);
                 scene.add(directionalLight);
+              
+                // ✅ Cargar tu modelo Cube.glb
+                const asset = Asset.fromModule(require('../assets/models/Cube.glb'));
+                await asset.downloadAsync();
+              
+                const loader = new GLTFLoader();
+                loader.load(
+                  asset.localUri || asset.uri,
+                  (gltf) => {
+                    const model = gltf.scene;
+                    model.scale.set(1, 1, 1);
+                    model.position.y = 0;
 
-                cube.position.y = 0;
+                    model.traverse((child: THREE.Object3D) => {
+                      if ((child as THREE.Mesh).isMesh) {
+                        const mesh = child as THREE.Mesh;
+                    
+                        // El material puede ser único o array
+                        if (Array.isArray(mesh.material)) {
+                          mesh.material.forEach((mat) => {
+                            const standardMat = mat as THREE.MeshStandardMaterial;
+                            standardMat.color.set('#6DFFD5');
+                            standardMat.needsUpdate = true;
+                          });
+                        } else {
+                          const standardMat = mesh.material as THREE.MeshStandardMaterial;
+                          standardMat.color.set('#6DFFD5');
+                          standardMat.needsUpdate = true;
+                        }
+                      }
+                    });
+                    
+                    
 
-                const animate = () => {
-                  requestAnimationFrame(animate);
-                  cube.rotation.x += 0.01;
-                  cube.rotation.y += 0.01;
-                  renderer.render(scene, camera);
-                  gl.endFrameEXP();
-                };
-
-                animate();
-              }}
+                    scene.add(model);
+                    
+              
+                    const animate = () => {
+                      requestAnimationFrame(animate);
+                      model.rotation.y += 0.01;
+                      renderer.render(scene, camera);
+                      gl.endFrameEXP();
+                    };
+              
+                    animate();
+                  },
+                  undefined,
+                  (error) => {
+                    console.error('❌ Error al cargar el modelo:', error);
+                  }
+                );
+              }}              
             />
           </Animated.View>
         )}
