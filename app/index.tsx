@@ -18,6 +18,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 export default function IndexScreen() {
   const router = useRouter();
   const [showLogo, setShowLogo] = useState(true);
+  const [showGradient, setShowGradient] = useState(true);
   const [showShadow, setShowShadow] = useState(false);
   const [showCube, setShowCube] = useState(false);
   const [showUI, setShowUI] = useState(false);
@@ -39,15 +40,17 @@ export default function IndexScreen() {
 
     const timer1 = setTimeout(() => setShowLogo(false), 2000);
     const timer2 = setTimeout(() => setShowShadow(true), 2000);
-    const timer3 = setTimeout(() => setShowCube(true), 3700);
-    const timer4 = setTimeout(() => {
+    const timer3 = setTimeout(() => setShowGradient(true), 0);
+    const timer4 = setTimeout(() => setShowCube(true), 3700);
+    const timer5 = setTimeout(() => 
+      {
       Animated.timing(cubeY, {
         toValue: 0,
         duration: 800,
         useNativeDriver: true,
       }).start();
     }, 3900);
-    const timer5 = setTimeout(() => {
+    const timer6 = setTimeout(() => {
       Animated.timing(uiY, {
         toValue: 0,
         duration: 1000,
@@ -62,6 +65,7 @@ export default function IndexScreen() {
       clearTimeout(timer3);
       clearTimeout(timer4);
       clearTimeout(timer5);
+      clearTimeout(timer6);
     };
   }, []);
 
@@ -99,6 +103,16 @@ export default function IndexScreen() {
           </Animated.View>
         )}
 
+        {showGradient && (
+        <Animated.View style={[styles.GradientContainer, { opacity: fadeAnim }]}> 
+        <Image
+        source={isDarkMode ? require('../assets/gradient.png') : require('../assets/gradient-light.png')}
+        style={styles.gradient}
+        resizeMode="contain"
+        />
+      </Animated.View>
+        )}
+
         {showShadow && (
           <Image source={shadowSource} style={styles.shadowImage} resizeMode="contain" />
         )}
@@ -119,7 +133,7 @@ export default function IndexScreen() {
               style={{ width: '100%', height: '100%' }}
               onContextCreate={async (gl) => {
                 const scene = new THREE.Scene();
-                scene.background = new THREE.Color(backgroundColor);
+                scene.background = null;
 
                 const camera = new THREE.PerspectiveCamera(
                   75,
@@ -207,6 +221,22 @@ const styles = StyleSheet.create({
     width: 120,
     height: 36,
   },
+  GradientContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 0,
+  },
+  gradient: {
+    width: '150%',
+    height: '190%',
+    transform: [{ translateX: 20 }, { translateY: 30 }], 
+    opacity: 1,
+  },    
   glView: {
     width: '100%',
     height: 320,
