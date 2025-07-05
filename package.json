@@ -15,11 +15,13 @@
     "expo-file-system": "^18.1.10",
     "expo-gl": "~15.1.6",
     "expo-linear-gradient": "~14.1.5",
+    "expo-linking": "^7.1.7",
     "expo-router": "~5.0.7",
+    "expo-three": "^7.0.0",
     "react": "^19.0.0",
     "react-native": "^0.79.4",
     "react-native-safe-area-context": "5.4.0",
-    "three": "^0.152.2",
+    "three": "^0.145.0",
     "three-stdlib": "^2.36.0"
   },
   "devDependencies": {

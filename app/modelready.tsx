@@ -1,13 +1,24 @@
 import { View, Text, StyleSheet, Button } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
 import { NativeModules } from 'react-native';
-import React from 'react';
-
+import React, { useEffect, useState } from 'react';
 
 const { ModelPreviewModule } = NativeModules;
 
 export default function ModelReadyScreen() {
-  const { filePath } = useLocalSearchParams();
+  const [modelPath, setModelPath] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchModelPath = async () => {
+      try {
+        const path = await ModelPreviewModule.getLastGeneratedPath();
+        setModelPath(path);
+      } catch (e) {
+        console.warn('No se pudo obtener la ruta del modelo');
+      }
+    };
+
+    fetchModelPath();
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -17,8 +28,8 @@ export default function ModelReadyScreen() {
       <Button
         title="Ver modelo en 3D"
         onPress={() => {
-          if (filePath) {
-            ModelPreviewModule.showModelPreview(filePath);
+          if (modelPath) {
+            ModelPreviewModule.showModelPreview(modelPath);
           } else {
             alert('No se encontró la ruta del modelo generado.');
           }

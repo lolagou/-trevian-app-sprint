@@ -1,20 +1,26 @@
-import Foundation
-import UIKit
-import SwiftUI
-
 @objc(ModelPreviewModule)
 class ModelPreviewModule: NSObject {
-  @objc
-  func showModelPreview(_ usdzPath: String) {
-    DispatchQueue.main.async {
-      guard
-        let scene = UIApplication.shared.connectedScenes.compactMap({ $0 as? UIWindowScene }).first,
-        let window = scene.windows.first(where: { $0.isKeyWindow }),
-        let rootVC = window.rootViewController
-      else { return }
+  private var lastPath: String?
 
-      let previewVC = ModelPreviewController(modelPath: URL(fileURLWithPath: usdzPath))
-      rootVC.present(previewVC, animated: true)
+  @objc func showModelPreview(_ filePath: String) {
+    lastPath = filePath
+    DispatchQueue.main.async {
+      let url = URL(fileURLWithPath: filePath)
+      let preview = QLPreviewController()
+      let item = ModelPreviewItem(url: url)
+      preview.dataSource = item
+
+      if let rootVC = UIApplication.shared.keyWindow?.rootViewController {
+        rootVC.present(preview, animated: true)
+      }
+    }
+  }
+
+  @objc func getLastGeneratedPath(_ resolve: RCTPromiseResolveBlock, rejecter reject: RCTPromiseRejectBlock) {
+    if let path = lastPath {
+      resolve(path)
+    } else {
+      reject("no_path", "No se encontró un modelo reciente", nil)
     }
   }
 }

@@ -8,12 +8,11 @@ import {
   Image,
   Switch,
 } from 'react-native';
-import { GLTFLoader } from 'three-stdlib'; 
+import { GLTFLoader } from 'three-stdlib';
 import { Asset } from 'expo-asset';
 import { GLView } from 'expo-gl';
 import { useRouter } from 'expo-router';
 import * as THREE from 'three';
-import { Renderer } from 'expo-three';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -29,9 +28,7 @@ export default function IndexScreen() {
   const cubeY = useRef(new Animated.Value(200)).current;
   const [isDarkMode, setIsDarkMode] = useState(true);
 
-  const toggleTheme = () => {
-    setIsDarkMode((prev) => !prev);
-  };
+  const toggleTheme = () => setIsDarkMode((prev) => !prev);
 
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -40,42 +37,35 @@ export default function IndexScreen() {
       useNativeDriver: true,
     }).start();
 
-    const timer1 = setTimeout(() => setShowLogo(false), 2000);
-    const timer2 = setTimeout(() => setShowShadow(true), 2000);
-    const timer3 = setTimeout(() => setShowGradient(true), 0);
-    const timer4 = setTimeout(() => setShowCube(true), 3700);
-    const timer5 = setTimeout(() => 
-      {
-      Animated.timing(cubeY, {
-        toValue: 0,
-        duration: 800,
-        useNativeDriver: true,
-      }).start();
-    }, 3900);
-    const timer6 = setTimeout(() => {
-      Animated.timing(uiY, {
-        toValue: 0,
-        duration: 1000,
-        useNativeDriver: true,
-      }).start();
-      setShowUI(true);
-    }, 4800);
+    const timers = [
+      setTimeout(() => setShowLogo(false), 2000),
+      setTimeout(() => setShowShadow(true), 2000),
+      setTimeout(() => setShowGradient(true), 0),
+      setTimeout(() => setShowCube(true), 3700),
+      setTimeout(() => {
+        Animated.timing(cubeY, {
+          toValue: 0,
+          duration: 800,
+          useNativeDriver: true,
+        }).start();
+      }, 3900),
+      setTimeout(() => {
+        Animated.timing(uiY, {
+          toValue: 0,
+          duration: 1000,
+          useNativeDriver: true,
+        }).start();
+        setShowUI(true);
+      }, 4800),
+    ];
 
-    return () => {
-      clearTimeout(timer1);
-      clearTimeout(timer2);
-      clearTimeout(timer3);
-      clearTimeout(timer4);
-      clearTimeout(timer5);
-      clearTimeout(timer6);
-    };
+    return () => timers.forEach(clearTimeout);
   }, []);
 
   const backgroundColor = isDarkMode ? '#02001A' : '#CBFFEF';
   const lineColor = isDarkMode ? '#CBFFEF' : '#05003F';
   const buttonBackground = isDarkMode ? '#6DFFD5' : '#05003F';
   const buttonTextColor = isDarkMode ? '#05003F' : '#CBFFEF';
-  const cubeColor = isDarkMode ? '#CBFFEF' : '#05003F';
   const shadowSource = isDarkMode
     ? require('../assets/shadow-dark.png')
     : require('../assets/shadow-light.png');
@@ -106,13 +96,13 @@ export default function IndexScreen() {
         )}
 
         {showGradient && (
-        <Animated.View style={[styles.GradientContainer, { opacity: fadeAnim }]}> 
-        <Image
-        source={isDarkMode ? require('../assets/gradient.png') : require('../assets/gradient-light.png')}
-        style={styles.gradient}
-        resizeMode="contain"
-        />
-      </Animated.View>
+          <Animated.View style={[styles.GradientContainer, { opacity: fadeAnim }]}> 
+            <Image
+              source={isDarkMode ? require('../assets/gradient.png') : require('../assets/gradient-light.png')}
+              style={styles.gradient}
+              resizeMode="contain"
+            />
+          </Animated.View>
         )}
 
         {showShadow && (
@@ -133,10 +123,10 @@ export default function IndexScreen() {
             <GLView
               key={isDarkMode ? 'dark' : 'light'}
               style={{ width: '100%', height: '100%' }}
-              onContextCreate={async (gl) => {
+              onContextCreate={async (gl: WebGLRenderingContext & { endFrameEXP: () => void }) => {
                 const scene = new THREE.Scene();
                 scene.background = null;
-              
+
                 const camera = new THREE.PerspectiveCamera(
                   75,
                   gl.drawingBufferWidth / gl.drawingBufferHeight,
@@ -144,21 +134,18 @@ export default function IndexScreen() {
                   1000
                 );
                 camera.position.z = 4;
-              
-                const renderer = new Renderer({ gl });
+
+                const renderer = new THREE.WebGLRenderer({ context: gl });
                 renderer.setSize(gl.drawingBufferWidth, gl.drawingBufferHeight);
-              
-                const ambientLight = new THREE.AmbientLight(0xffffff, 1.2);
-                scene.add(ambientLight);
-              
-                const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-                directionalLight.position.set(5, 5, 5);
-                scene.add(directionalLight);
-              
-                // ✅ Cargar tu modelo Cube.glb
+
+                scene.add(new THREE.AmbientLight(0xffffff, 1.2));
+                const light = new THREE.DirectionalLight(0xffffff, 0.8);
+                light.position.set(5, 5, 5);
+                scene.add(light);
+
                 const asset = Asset.fromModule(require('../assets/models/Cube.glb'));
                 await asset.downloadAsync();
-              
+
                 const loader = new GLTFLoader();
                 loader.load(
                   asset.localUri || asset.uri,
@@ -167,45 +154,33 @@ export default function IndexScreen() {
                     model.scale.set(1, 1, 1);
                     model.position.y = 0;
 
-                    model.traverse((child: THREE.Object3D) => {
+                    model.traverse((child) => {
                       if ((child as THREE.Mesh).isMesh) {
                         const mesh = child as THREE.Mesh;
-                    
-                        // El material puede ser único o array
-                        if (Array.isArray(mesh.material)) {
-                          mesh.material.forEach((mat) => {
-                            const standardMat = mat as THREE.MeshStandardMaterial;
-                            standardMat.color.set('#6DFFD5');
-                            standardMat.needsUpdate = true;
-                          });
-                        } else {
-                          const standardMat = mesh.material as THREE.MeshStandardMaterial;
+                        const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+                        materials.forEach((mat) => {
+                          const standardMat = mat as THREE.MeshStandardMaterial;
                           standardMat.color.set('#6DFFD5');
                           standardMat.needsUpdate = true;
-                        }
+                        });
                       }
                     });
-                    
-                    
 
                     scene.add(model);
-                    
-              
+
                     const animate = () => {
                       requestAnimationFrame(animate);
                       model.rotation.y += 0.01;
                       renderer.render(scene, camera);
                       gl.endFrameEXP();
                     };
-              
+
                     animate();
                   },
                   undefined,
-                  (error) => {
-                    console.error('❌ Error al cargar el modelo:', error);
-                  }
+                  (error) => console.error('Error loading model:', error)
                 );
-              }}              
+              }}
             />
           </Animated.View>
         )}
@@ -270,12 +245,8 @@ const styles = StyleSheet.create({
   gradient: {
     width: '150%',
     height: '190%',
-    transform: [{ translateX: 20 }, { translateY: 30 }], 
+    transform: [{ translateX: 20 }, { translateY: 30 }],
     opacity: 1,
-  },    
-  glView: {
-    width: '100%',
-    height: 320,
   },
   shadowImage: {
     position: 'absolute',
