@@ -1,21 +1,29 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Button } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
+import { NativeModules } from 'react-native';
+import React from 'react';
 
-export default function ModelReady() {
-  const { modelURL } = useLocalSearchParams(); // opcional: recibir la URL
+
+const { ModelPreviewModule } = NativeModules;
+
+export default function ModelReadyScreen() {
+  const { filePath } = useLocalSearchParams();
 
   return (
     <View style={styles.container}>
+      <Text style={styles.title}>¡Tu modelo está listo!</Text>
+      <Text style={styles.subtitle}>Ingresá tu domicilio para continuar.</Text>
 
-      <Text style={styles.title}>¡Tu modelo ya está hecho!</Text>
-      <Text style={styles.subtitle}>Ingresá tu domicilio para recibirlo:</Text>
-
-      {/* Podés mostrar la URL si querés */}
-      {modelURL && (
-        <Text selectable style={styles.url}>{modelURL}</Text>
-      )}
-
-      {/* Podés poner acá un formulario de dirección */}
+      <Button
+        title="Ver modelo en 3D"
+        onPress={() => {
+          if (filePath) {
+            ModelPreviewModule.showModelPreview(filePath);
+          } else {
+            alert('No se encontró la ruta del modelo generado.');
+          }
+        }}
+      />
     </View>
   );
 }
@@ -39,12 +47,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#6DFFD5',
     marginBottom: 24,
-    textAlign: 'center',
-  },
-  url: {
-    fontSize: 12,
-    color: '#999',
-    marginTop: 10,
     textAlign: 'center',
   },
 });

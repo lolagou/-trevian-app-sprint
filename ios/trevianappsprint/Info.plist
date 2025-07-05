@@ -74,5 +74,7 @@
 	<string>Necesitamos acceder a la cámara para escanear el objeto 3D.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>La app requiere acceso al micrófono para capturar escaneos más precisos.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Guardaremos imágenes necesarias para generar el modelo 3D.</string>
 </dict>
 </plist>

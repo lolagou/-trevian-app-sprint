@@ -8,7 +8,7 @@ import {
   Image,
   Switch,
 } from 'react-native';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import { GLTFLoader } from 'three-stdlib'; 
 import { Asset } from 'expo-asset';
 import { GLView } from 'expo-gl';
 import { useRouter } from 'expo-router';

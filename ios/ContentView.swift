@@ -1,8 +1,10 @@
 import SwiftUI
 import RealityKit
+import React
 
 struct ContentView: View {
     
+    var onModelGenerated: (URL) -> Void 
     @State private var session: ObjectCaptureSession?
     @State private var rootImageFolder: URL?
     @State private var modelFolderPath: URL?
@@ -10,6 +12,7 @@ struct ContentView: View {
     @State private var photogrammetrySession: PhotogrammetrySession?
     @State private var isProgressing = false
     @State private var quickLookIsPresented = false
+    
     
     @State private var passCount: Int = 0
     private let maxPasses = 1
@@ -91,14 +94,17 @@ struct ContentView: View {
             }
         }
         // Hoja de QuickLook
-        .sheet(isPresented: $quickLookIsPresented) {
-            if let modelPath {
-                ARQuickLookView(modelFile: modelPath) {
+        .onChange(of: quickLookIsPresented) { _, newValue in
+    if newValue, let modelPath {
+        quickLookIsPresented = false
+        let bridge = RCTBridge.current()
+        let module = bridge?.module(forName: "ModelPreviewModule") as? NSObject
+        module?.perform(Selector(("showModelPreview:")), with: modelPath.path)
+        resetAll()
+    }
+}
 
-                    resetAll()
-                }
-            }
-        }
+
         // Cada vez que userCompletedScanPass == true
         .onChange(of: session?.userCompletedScanPass) { _, newValue in
             guard let passed = newValue, passed else { return }
@@ -234,7 +240,7 @@ struct ContentView: View {
             
             for try await output in session.outputs {
                 switch output {
-                case .requestError(let err):
+                case .requestError(_, let err):
                     print("📛 Error en Photogrammetry: \(err)")
                     isProgressing = false
                     photogrammetrySession = nil
@@ -245,12 +251,15 @@ struct ContentView: View {
                     photogrammetrySession = nil
                     return
                 case .processingComplete:
-                    print("✅ Photogrammetry completada. Mostrando QuickLook.")
-                    isProgressing = false
-                    photogrammetrySession = nil
-                    let modelPath = modelDir.appendingPathComponent("model.usdz")
-                    quickLookIsPresented = true
-                    await uploadUSDZToBackend(fileURL: modelPath)
+                print("✅ Photogrammetry completada. Mostrando QuickLook.")
+                isProgressing = false
+                photogrammetrySession = nil
+
+                let modelPath = modelDir.appendingPathComponent("model.usdz")
+                quickLookIsPresented = true
+
+                onModelGenerated(modelPath) // 👈 Llama al callback
+                await uploadUSDZToBackend(fileURL: modelPath)
 
                 default:
                     break
