@@ -18,7 +18,6 @@
 		3AE5A2432E19735D00589C5C /* ModelPreviewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AE5A2402E19735D00589C5C /* ModelPreviewController.swift */; };
 		3AE5A2442E19735D00589C5C /* ModelPreviewModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AE5A2412E19735D00589C5C /* ModelPreviewModule.swift */; };
 		3AE5A2452E19735D00589C5C /* ModelPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AE5A2422E19735D00589C5C /* ModelPreviewView.swift */; };
-		3AE5A2472E19741900589C5C /* ModelPreviewModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AE5A2462E19741900589C5C /* ModelPreviewModule.m */; };
 		3AE5A2492E19756100589C5C /* RealityKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3AE5A2482E19756100589C5C /* RealityKit.framework */; };
 		3AE5A24B2E19756900589C5C /* ARKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3AE5A24A2E19756900589C5C /* ARKit.framework */; };
 		3AE5A24D2E19757300589C5C /* QuickLook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3AE5A24C2E19757300589C5C /* QuickLook.framework */; };
@@ -46,7 +45,6 @@
 		3AE5A2402E19735D00589C5C /* ModelPreviewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelPreviewController.swift; sourceTree = "<group>"; };
 		3AE5A2412E19735D00589C5C /* ModelPreviewModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelPreviewModule.swift; sourceTree = "<group>"; };
 		3AE5A2422E19735D00589C5C /* ModelPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelPreviewView.swift; sourceTree = "<group>"; };
-		3AE5A2462E19741900589C5C /* ModelPreviewModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ModelPreviewModule.m; sourceTree = "<group>"; };
 		3AE5A2482E19756100589C5C /* RealityKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RealityKit.framework; path = System/Library/Frameworks/RealityKit.framework; sourceTree = SDKROOT; };
 		3AE5A24A2E19756900589C5C /* ARKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ARKit.framework; path = System/Library/Frameworks/ARKit.framework; sourceTree = SDKROOT; };
 		3AE5A24C2E19757300589C5C /* QuickLook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickLook.framework; path = System/Library/Frameworks/QuickLook.framework; sourceTree = SDKROOT; };
@@ -91,7 +89,6 @@
 			children = (
 				3A5ED71C2DF2996D0023651F /* ObjectCaptureModule.swift */,
 				3AE5A2402E19735D00589C5C /* ModelPreviewController.swift */,
-				3AE5A2462E19741900589C5C /* ModelPreviewModule.m */,
 				3AE5A2412E19735D00589C5C /* ModelPreviewModule.swift */,
 				3AE5A2422E19735D00589C5C /* ModelPreviewView.swift */,
 				3A5ED7122DF244540023651F /* SuperSimpleObjectCaptureApp.swift */,
@@ -372,7 +369,6 @@
 				3AE5A2442E19735D00589C5C /* ModelPreviewModule.swift in Sources */,
 				3AE5A2452E19735D00589C5C /* ModelPreviewView.swift in Sources */,
 				3A5ED7182DF244540023651F /* ARQuickLookView.swift in Sources */,
-				3AE5A2472E19741900589C5C /* ModelPreviewModule.m in Sources */,
 				3A5ED7192DF244540023651F /* CaptureState+.swift in Sources */,
 				3A5ED71A2DF244540023651F /* ContentView.swift in Sources */,
 				3A5ED71B2DF244540023651F /* CreateButton.swift in Sources */,
@@ -513,10 +509,7 @@
 				LIBRARY_SEARCH_PATHS = "$(SDKROOT)/usr/lib/swift\"$(inherited)\"";
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
@@ -571,10 +564,7 @@
 				);
 				LIBRARY_SEARCH_PATHS = "$(SDKROOT)/usr/lib/swift\"$(inherited)\"";
 				MTL_ENABLE_DEBUG_INFO = NO;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;

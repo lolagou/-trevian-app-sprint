@@ -40,7 +40,7 @@ export default function Result() {
         type: 'model/vnd.usdz+zip',
       } as any);
   
-      const response = await fetch('https://trevian-server.vercel.app/api/model/upload', { 
+      const response = await fetch('https://trevian-server.vercel.app/models/upload', { 
         method: 'POST',
         body: formData,
         headers: {

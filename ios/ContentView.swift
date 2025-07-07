@@ -98,22 +98,22 @@ struct ContentView: View {
         .onChange(of: session?.userCompletedScanPass) { _, newValue in
             guard let passed = newValue, passed else { return }
             passCount += 1
-            print("\ud83d\udcf8 Pasada \(passCount) completada.")
+            print("📸 Pasada \(passCount) completada.")
             if passCount < maxPasses {
                 if #available(iOS 17.0, *) {
-                    print("\u2794\ufe0f Avanzando a la siguiente pasada con beginNewScanPass()")
+                    print("Avanzando a la siguiente pasada con beginNewScanPass()")
                     session?.beginNewScanPass()
                 } else {
-                    print("\u26a0\ufe0f iOS < 17: no es posible continuar la misma sesi\u00f3n sin reiniciar.")
+                    print("iOS < 17: no es posible continuar la misma sin reiniciar.")
                 }
             } else {
-                print("\u2705 Todas las pasadas completadas. Llamando a session.finish()")
+                print("Todas las pasadas completadas. Llamando a session.finish()")
                 session?.finish()
             }
         }
         .onChange(of: session?.state) { _, newState in
             if newState == .completed {
-                print("\ud83d\udd04 session.state lleg\u00f3 a .completed → arrancando Photogrammetry")
+                print(" session.state a .completed → arrancando Photogrammetry")
                 Task { await startReconstruction() }
             }
         }
@@ -122,7 +122,7 @@ struct ContentView: View {
     func startNewScanWorkflow() {
         passCount = 0
         guard let baseScanDir = createTimestampedScanFolder() else {
-            print("\u274c No pude crear la carpeta ra\u00edz de escaneo.")
+            print("No pude crear la carpeta de escaneo.")
             return
         }
         rootImageFolder = baseScanDir.appendingPathComponent("Images/", isDirectory: true)
@@ -131,7 +131,7 @@ struct ContentView: View {
             try FileManager.default.createDirectory(at: rootImageFolder!, withIntermediateDirectories: true)
             try FileManager.default.createDirectory(at: modelFolderPath!, withIntermediateDirectories: true)
         } catch {
-            print("\u274c Error creando carpetas ra\u00edz: \(error)")
+            print("Error creando carpetas raíz: \(error)")
             return
         }
         session = ObjectCaptureSession()
@@ -145,7 +145,7 @@ struct ContentView: View {
             do {
                 try FileManager.default.createDirectory(at: scansRoot, withIntermediateDirectories: true)
             } catch {
-                print("\u274c Error creando carpeta Scans/: \(error)")
+                print("Error creando carpeta Scans/: \(error)")
                 return nil
             }
         }
@@ -157,14 +157,14 @@ struct ContentView: View {
             try FileManager.default.createDirectory(at: newScanDir, withIntermediateDirectories: true)
             return newScanDir
         } catch {
-            print("\u274c Error creando carpeta con timestamp: \(error)")
+            print("Error creando carpeta con timestamp: \(error)")
             return nil
         }
     }
 
     private func startReconstruction() async {
         guard let allImagesFolder = rootImageFolder, let modelDir = modelFolderPath else {
-            print("\u274c No tengo rutas para Photogrammetry.")
+            print("No tengo rutas para Photogrammetry.")
             return
         }
         isProgressing = true
@@ -182,17 +182,17 @@ struct ContentView: View {
             for try await output in session.outputs {
                 switch output {
                 case .requestError(_, let err):
-                    print("\ud83d\udccb Error en Photogrammetry: \(err)")
+                    print("Error en Photogrammetry: \(err)")
                     isProgressing = false
                     photogrammetrySession = nil
                     return
                 case .processingCancelled:
-                    print("\u26a0\ufe0f Photogrammetry cancelada.")
+                    print("Photogrammetry cancelada.")
                     isProgressing = false
                     photogrammetrySession = nil
                     return
                 case .processingComplete:
-                    print("\u2705 Photogrammetry completada. Mostrando QuickLook.")
+                    print("Photogrammetry completada. Mostrando QuickLook.")
                     isProgressing = false
                     photogrammetrySession = nil
 
@@ -205,18 +205,23 @@ struct ContentView: View {
                             try FileManager.default.removeItem(at: finalPath)
                         }
                         try FileManager.default.copyItem(at: generatedPath, to: finalPath)
-                        print("\u2705 Modelo copiado a Documents/model.usdz:", finalPath.path)
+                        print("Modelo copiado a Documents/model.usdz:", finalPath.path)
+
+                        let bridge = RCTBridge.current()
+                        let module = bridge?.module(forName: "ModelPreviewModule") as? NSObject
+                        module?.perform(Selector(("setLastGeneratedPath:")), with: finalPath.path)
+
                         quickLookIsPresented = true
                         onModelGenerated(finalPath)
                         await uploadUSDZToBackend(fileURL: finalPath)
                     } catch {
-                        print("\u274c Error copiando el modelo a ruta persistente:", error)
+                        print("Error copiando el modelo a ruta persistente:", error)
                     }
                 default: break
                 }
             }
         } catch {
-            print("\u274c Al lanzar PhotogrammetrySession: \(error)")
+            print("Al lanzar PhotogrammetrySession: \(error)")
             isProgressing = false
             photogrammetrySession = nil
         }
@@ -233,9 +238,9 @@ struct ContentView: View {
             if FileManager.default.fileExists(atPath: scansRoot.path) {
                 do {
                     try FileManager.default.removeItem(at: scansRoot)
-                    print("\ud83d\uddd1\ufe0f Carpeta Scans/ borrada.")
+                    print("Carpeta Scans/ borrada.")
                 } catch {
-                    print("\u26a0\ufe0f Error borrando Scans/: \(error)")
+                    print("Error borrando Scans/: \(error)")
                 }
             }
         }
@@ -251,7 +256,7 @@ func uploadUSDZToBackend(fileURL: URL) async {
     let boundary = UUID().uuidString
     request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
     guard let fileData = try? Data(contentsOf: fileURL) else {
-        print("\u274c No se pudo leer el archivo USDZ.")
+        print("No se pudo leer el archivo USDZ.")
         return
     }
     var body = Data()
@@ -267,14 +272,14 @@ func uploadUSDZToBackend(fileURL: URL) async {
     do {
         let (data, response) = try await URLSession.shared.data(for: request)
         if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 {
-            print("\u2705 Modelo subido con \u00e9xito.")
+            print("Modelo subido con éxito.")
         } else {
-            print("\u274c Error en la respuesta: \(response)")
+            print("Error en la respuesta: \(response)")
             if let string = String(data: data, encoding: .utf8) {
-                print("\u2139\ufe0f Backend dijo: \(string)")
+                print("Backend dijo: \(string)")
             }
         }
     } catch {
-        print("\u274c Error al subir el archivo: \(error.localizedDescription)")
+        print("Error al subir el archivo: \(error.localizedDescription)")
     }
 }

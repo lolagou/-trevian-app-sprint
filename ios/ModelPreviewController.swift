@@ -87,7 +87,7 @@ class ModelPreviewController: UIViewController {
             topView.scene.anchors.append(topAnchor)
 
         } catch {
-            print("❌ Error cargando modelo: \(error)")
+            print("Error cargando modelo: \(error)")
         }
     }
 

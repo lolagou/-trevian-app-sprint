@@ -1,10 +1,9 @@
 #import <React/RCTBridgeModule.h>
-#import <React/RCTUtils.h>
-#import <QuickLook/QuickLook.h>
 
 @interface RCT_EXTERN_MODULE(ModelPreviewModule, NSObject)
 
-RCT_EXPORT_METHOD(showModelPreview:(NSString *)filePath)
-RCT_EXPORT_METHOD(getLastGeneratedPath:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
+RCT_EXTERN_METHOD(showModelPreview:(NSString *)filePath)
+RCT_EXTERN_METHOD(getLastGeneratedPath:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
+RCT_EXTERN_METHOD(setLastGeneratedPath:(NSString *)filePath)
 
 @end

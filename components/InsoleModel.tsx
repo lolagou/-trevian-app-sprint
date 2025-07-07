@@ -5,6 +5,10 @@ import * as THREE from 'three';
 import { Asset } from 'expo-asset';
 import { GLTFLoader } from 'three-stdlib';
 
+type GLContext = WebGLRenderingContext & {
+  endFrameEXP?: () => void;
+};
+
 export default function InsoleModel() {
   const modelRef = useRef<THREE.Group | null>(null);
 
@@ -12,7 +16,7 @@ export default function InsoleModel() {
     <View style={{ flex: 1, backgroundColor: '#05003F' }}>
       <GLView
         style={{ flex: 1 }}
-        onContextCreate={async (gl) => {
+        onContextCreate={async (gl: GLContext) => {
           const { drawingBufferWidth: width, drawingBufferHeight: height } = gl;
 
           // 1. Escena y cámara
@@ -45,7 +49,7 @@ export default function InsoleModel() {
             },
             undefined,
             (error) => {
-              console.error('❌ Error cargando modelo:', error);
+              console.error('Error cargando modelo:', error);
             }
           );
 
@@ -56,7 +60,7 @@ export default function InsoleModel() {
               modelRef.current.rotation.y += 0.01;
             }
             renderer.render(scene, camera);
-            gl.endFrameEXP();
+            gl.endFrameEXP?.(); // ← importante usar "?" por seguridad
           };
 
           animate();
