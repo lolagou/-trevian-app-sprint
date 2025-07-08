@@ -1,53 +1,49 @@
-import { View, Text, StyleSheet, Button, Alert, ActivityIndicator } from 'react-native';
-import { NativeModules } from 'react-native';
-import React, { useEffect, useState } from 'react';
-
-const { ModelPreviewModule } = NativeModules;
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
+import { useRouter } from 'expo-router';
+import CustomButton from '../components/CustomButton'; // Asegurate que la ruta sea correcta
 
 export default function ModelReadyScreen() {
-  const [modelPath, setModelPath] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [address, setAddress] = useState('');
+  const router = useRouter();
 
-  useEffect(() => {
-    const fetchModelPath = async () => {
-      try {
-        const path = await ModelPreviewModule.getLastGeneratedPath();
-        setModelPath(path);
-      } catch (e) {
-        console.warn('No se pudo obtener la ruta del modelo');
-        Alert.alert('Error', 'No se pudo cargar el modelo generado.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchModelPath();
-  }, []);
-
-  const handleViewModel = () => {
-    if (modelPath) {
-      ModelPreviewModule.showModelPreview(modelPath);
-    } else {
-      Alert.alert('Modelo no disponible', 'No se encontró la ruta del modelo generado.');
+  const handleContinue = () => {
+    if (!address.trim()) {
+      Alert.alert('Campo incompleto', 'Por favor ingresá tu domicilio.');
+      return;
     }
+
+    console.log('🏠 Domicilio ingresado:', address);
+    // Aquí podés enviar el domicilio al backend si querés
+    router.push('/confirmacion'); // redirigí a la pantalla que corresponda
   };
 
-  if (loading) {
-    return (
-      <View style={styles.container}>
-        <ActivityIndicator size="large" color="#6DFFD5" />
-        <Text style={styles.loadingText}>Cargando modelo 3D...</Text>
-      </View>
-    );
-  }
-
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>¡Tu modelo está listo!</Text>
-      <Text style={styles.subtitle}>Ingresá tu domicilio para continuar.</Text>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.select({ ios: 'padding', android: undefined })}
+    >
+      <Text style={styles.title}>Modelo procesado correctamente</Text>
+      <Text style={styles.subtitle}>Ingresá tu domicilio para continuar con el pedido.</Text>
 
-      <Button title="Ver modelo en 3D" onPress={handleViewModel} />
-    </View>
+      <TextInput
+        style={styles.input}
+        placeholder="Ej: Av. Santa Fe 1234"
+        placeholderTextColor="#88ffdd"
+        value={address}
+        onChangeText={setAddress}
+      />
+
+      <CustomButton text="Continuar" onPress={handleContinue} />
+    </KeyboardAvoidingView>
   );
 }
 
@@ -72,9 +68,13 @@ const styles = StyleSheet.create({
     marginBottom: 24,
     textAlign: 'center',
   },
-  loadingText: {
-    marginTop: 12,
-    fontSize: 14,
-    color: '#CBFFEF',
+  input: {
+    borderWidth: 1,
+    borderColor: '#6DFFD5',
+    borderRadius: 10,
+    color: '#ffffff',
+    padding: 12,
+    marginBottom: 20,
+    width: '100%',
   },
 });

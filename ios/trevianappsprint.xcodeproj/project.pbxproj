@@ -9,19 +9,18 @@
 /* Begin PBXBuildFile section */
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		3A5ED7172DF244540023651F /* SuperSimpleObjectCaptureApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A5ED7122DF244540023651F /* SuperSimpleObjectCaptureApp.swift */; };
-		3A5ED7182DF244540023651F /* ARQuickLookView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A5ED7142DF244540023651F /* ARQuickLookView.swift */; };
 		3A5ED7192DF244540023651F /* CaptureState+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A5ED7162DF244540023651F /* CaptureState+.swift */; };
 		3A5ED71A2DF244540023651F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A5ED7132DF244540023651F /* ContentView.swift */; };
 		3A5ED71B2DF244540023651F /* CreateButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A5ED7152DF244540023651F /* CreateButton.swift */; };
 		3A5ED71D2DF299710023651F /* ObjectCaptureModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A5ED71C2DF2996D0023651F /* ObjectCaptureModule.swift */; };
 		3A5ED71F2DF29B130023651F /* ObjectCaptureBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A5ED71E2DF29B130023651F /* ObjectCaptureBridge.m */; };
 		3AE5A2432E19735D00589C5C /* ModelPreviewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AE5A2402E19735D00589C5C /* ModelPreviewController.swift */; };
-		3AE5A2442E19735D00589C5C /* ModelPreviewModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AE5A2412E19735D00589C5C /* ModelPreviewModule.swift */; };
 		3AE5A2452E19735D00589C5C /* ModelPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AE5A2422E19735D00589C5C /* ModelPreviewView.swift */; };
 		3AE5A2492E19756100589C5C /* RealityKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3AE5A2482E19756100589C5C /* RealityKit.framework */; };
 		3AE5A24B2E19756900589C5C /* ARKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3AE5A24A2E19756900589C5C /* ARKit.framework */; };
 		3AE5A24D2E19757300589C5C /* QuickLook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3AE5A24C2E19757300589C5C /* QuickLook.framework */; };
 		3AE5A24F2E19757C00589C5C /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3AE5A24E2E19757C00589C5C /* SwiftUI.framework */; };
+		3AE5A2542E1CAB7200589C5C /* ThreeViewWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AE5A2532E1CAB6800589C5C /* ThreeViewWrapper.swift */; };
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
 		AFECCC51F125C646199CDAC0 /* libPods-trevianappsprint.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E9EF2D1F4C234226CA390AD7 /* libPods-trevianappsprint.a */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
@@ -37,18 +36,17 @@
 		2CF8F8C1C5418ADD747CDBD9 /* Pods-trevianappsprint.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-trevianappsprint.debug.xcconfig"; path = "Target Support Files/Pods-trevianappsprint/Pods-trevianappsprint.debug.xcconfig"; sourceTree = "<group>"; };
 		3A5ED7122DF244540023651F /* SuperSimpleObjectCaptureApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuperSimpleObjectCaptureApp.swift; sourceTree = "<group>"; };
 		3A5ED7132DF244540023651F /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		3A5ED7142DF244540023651F /* ARQuickLookView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARQuickLookView.swift; sourceTree = "<group>"; };
 		3A5ED7152DF244540023651F /* CreateButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateButton.swift; sourceTree = "<group>"; };
 		3A5ED7162DF244540023651F /* CaptureState+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CaptureState+.swift"; sourceTree = "<group>"; };
 		3A5ED71C2DF2996D0023651F /* ObjectCaptureModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectCaptureModule.swift; sourceTree = "<group>"; };
 		3A5ED71E2DF29B130023651F /* ObjectCaptureBridge.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ObjectCaptureBridge.m; sourceTree = "<group>"; };
 		3AE5A2402E19735D00589C5C /* ModelPreviewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelPreviewController.swift; sourceTree = "<group>"; };
-		3AE5A2412E19735D00589C5C /* ModelPreviewModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelPreviewModule.swift; sourceTree = "<group>"; };
 		3AE5A2422E19735D00589C5C /* ModelPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelPreviewView.swift; sourceTree = "<group>"; };
 		3AE5A2482E19756100589C5C /* RealityKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RealityKit.framework; path = System/Library/Frameworks/RealityKit.framework; sourceTree = SDKROOT; };
 		3AE5A24A2E19756900589C5C /* ARKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ARKit.framework; path = System/Library/Frameworks/ARKit.framework; sourceTree = SDKROOT; };
 		3AE5A24C2E19757300589C5C /* QuickLook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickLook.framework; path = System/Library/Frameworks/QuickLook.framework; sourceTree = SDKROOT; };
 		3AE5A24E2E19757C00589C5C /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		3AE5A2532E1CAB6800589C5C /* ThreeViewWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreeViewWrapper.swift; sourceTree = "<group>"; };
 		6131E5FC7C2D3DB4C36CA01F /* Pods-trevianappsprint.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-trevianappsprint.release.xcconfig"; path = "Target Support Files/Pods-trevianappsprint/Pods-trevianappsprint.release.xcconfig"; sourceTree = "<group>"; };
 		6D079369962246784FED20D0 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = trevianappsprint/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		890A4BA0615F573A0B522762 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-trevianappsprint/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
@@ -89,11 +87,10 @@
 			children = (
 				3A5ED71C2DF2996D0023651F /* ObjectCaptureModule.swift */,
 				3AE5A2402E19735D00589C5C /* ModelPreviewController.swift */,
-				3AE5A2412E19735D00589C5C /* ModelPreviewModule.swift */,
 				3AE5A2422E19735D00589C5C /* ModelPreviewView.swift */,
 				3A5ED7122DF244540023651F /* SuperSimpleObjectCaptureApp.swift */,
+				3AE5A2532E1CAB6800589C5C /* ThreeViewWrapper.swift */,
 				3A5ED7132DF244540023651F /* ContentView.swift */,
-				3A5ED7142DF244540023651F /* ARQuickLookView.swift */,
 				3A5ED7152DF244540023651F /* CreateButton.swift */,
 				3A5ED7162DF244540023651F /* CaptureState+.swift */,
 				F11748412D0307B40044C1D9 /* AppDelegate.swift */,
@@ -366,9 +363,7 @@
 			files = (
 				3A5ED7172DF244540023651F /* SuperSimpleObjectCaptureApp.swift in Sources */,
 				3AE5A2432E19735D00589C5C /* ModelPreviewController.swift in Sources */,
-				3AE5A2442E19735D00589C5C /* ModelPreviewModule.swift in Sources */,
 				3AE5A2452E19735D00589C5C /* ModelPreviewView.swift in Sources */,
-				3A5ED7182DF244540023651F /* ARQuickLookView.swift in Sources */,
 				3A5ED7192DF244540023651F /* CaptureState+.swift in Sources */,
 				3A5ED71A2DF244540023651F /* ContentView.swift in Sources */,
 				3A5ED71B2DF244540023651F /* CreateButton.swift in Sources */,
@@ -376,6 +371,7 @@
 				3A5ED71F2DF29B130023651F /* ObjectCaptureBridge.m in Sources */,
 				F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */,
 				F9623BF646D4462CBBB8FA45 /* ExpoModulesProvider.swift in Sources */,
+				3AE5A2542E1CAB7200589C5C /* ThreeViewWrapper.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -25,6 +25,12 @@ export default function Result() {
     }).start();
   }, []);
 
+  useEffect(() => {
+    if (!filePath) return;
+    console.log("📥 Result.tsx recibió filePath desde Swift:", filePath);
+  }, [filePath]);
+
+
   const handleUpload = async () => {
     try {
       if (!filePath) {
