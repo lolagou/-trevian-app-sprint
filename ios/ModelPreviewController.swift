@@ -17,6 +17,8 @@ class ModelPreviewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        print("📦 ModelPreviewController cargado. Model path: \(modelPath.path)")
+
         // 🎨 Colores Trevian
         let backgroundColor = UIColor(red: 2/255, green: 0, blue: 26/255, alpha: 1) // #02001A
         let accentColor = UIColor(red: 109/255, green: 1, blue: 213/255, alpha: 1)  // #6DFFD5
@@ -24,7 +26,6 @@ class ModelPreviewController: UIViewController {
 
         view.backgroundColor = backgroundColor
 
-        // 🧩 Título
         let titleLabel = UILabel()
         titleLabel.text = "Acomodá tu modelo"
         titleLabel.textColor = textColor
@@ -38,7 +39,6 @@ class ModelPreviewController: UIViewController {
             titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ])
 
-        // 🧱 Stack con vistas
         let stack = UIStackView()
         stack.axis = .vertical
         stack.alignment = .fill
@@ -113,7 +113,6 @@ class ModelPreviewController: UIViewController {
             print("❌ Error al cargar modelo: \(error)")
         }
 
-        // 🔘 Botón CONTINUAR
         let continueButton = UIButton(type: .system)
         continueButton.setTitle("CONTINUAR", for: .normal)
         continueButton.setTitleColor(.black, for: .normal)
@@ -132,8 +131,9 @@ class ModelPreviewController: UIViewController {
         ])
     }
 
-    @objc func continuePressed() {
-        dismiss(animated: true) {
+@objc func continuePressed() {
+    dismiss(animated: true) {
+        DispatchQueue.main.async {
             NotificationCenter.default.post(
                 name: Notification.Name("goToResult"),
                 object: nil,
@@ -141,6 +141,8 @@ class ModelPreviewController: UIViewController {
             )
         }
     }
+}
+
 
     func createXYZAxes(scale: Float = 0.1) -> Entity {
         let axesEntity = Entity()

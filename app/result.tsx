@@ -5,6 +5,8 @@ import {
   Alert,
   StyleSheet,
   Animated,
+  NativeEventEmitter,
+  NativeModules,
 } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 
@@ -25,11 +27,26 @@ export default function Result() {
     }).start();
   }, []);
 
+  // 🎯 ESCUCHA EL EVENTO DESDE SWIFT
+  useEffect(() => {
+    const eventEmitter = new NativeEventEmitter(NativeModules.ModelPreviewModule);
+    const subscription = eventEmitter.addListener('goToResult', (event) => {
+      console.log('📨 Evento recibido desde Swift:', event);
+      const filePathFromSwift = event.filePath;
+      if (filePathFromSwift) {
+        router.replace({ pathname: '/result', params: { filePath: filePathFromSwift } });
+      }
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
+
   useEffect(() => {
     if (!filePath) return;
     console.log("📥 Result.tsx recibió filePath desde Swift:", filePath);
   }, [filePath]);
-
 
   const handleUpload = async () => {
     try {
@@ -37,49 +54,43 @@ export default function Result() {
         Alert.alert('Error', 'No hay archivo para subir');
         return;
       }
-  
+
       const formData = new FormData();
-  
       formData.append('file', {
         uri: filePath as string,
         name: 'scan.usdz',
         type: 'model/vnd.usdz+zip',
       } as any);
-  
-      const response = await fetch('https://trevian-server.vercel.app/models/upload', { 
+
+      const response = await fetch('https://trevian-server.vercel.app/models/upload', {
         method: 'POST',
         body: formData,
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
-  
+
       if (!response.ok) {
         throw new Error('Falló la carga del archivo');
       }
-  
+
       const json = await response.json();
-      const modelURL = json.url; // ✅ Acá recibís la URL
-  
-      // 👇 Navegar a la nueva pantalla
+      const modelURL = json.url;
+
       router.push({
         pathname: '/modelready',
         params: { modelURL },
       });
-  
+
     } catch (error) {
       console.error('❌ Error de conexión:', error);
       Alert.alert('Error', 'No se pudo subir el archivo');
     }
-  };  
-  
+  };
 
   return (
     <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
       <DashboardButton onPress={() => router.push('/dashboard')} />
-      
-
-
 
       <View style={styles.card}>
         <Text style={styles.title}>Archivo escaneado listo</Text>
@@ -91,7 +102,7 @@ export default function Result() {
         </View>
 
         <View style={styles.actions}>
-          <OutlineButton label="VOLVER A ESCANEAR" onPress={() => router.push('/scan')}/>
+          <OutlineButton label="VOLVER A ESCANEAR" onPress={() => router.push('/scan')} />
           <CTAButton label="ENVIAR" onPress={handleUpload} />
           <CTAButton label="PROBAR MODELREADY" onPress={() => router.push('/modelready')} />
         </View>
@@ -105,19 +116,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#020016',
     padding: 24,
-  },
-  progressBarContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginTop: 40,
-    marginBottom: 8,
-  },
-  progressText: {
-    height: 12,
-    width: '80%',
-    backgroundColor: '#CBFFEF',
-    borderRadius: 6,
   },
   card: {
     backgroundColor: '#020016',

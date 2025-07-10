@@ -107,9 +107,9 @@ export default function IndexScreen() {
             style={{
               transform: [{ translateY: cubeY }],
               position: 'absolute',
-              top: '22%',
-              width: '100%',
-              height: 320,
+              top: '34%',
+              width: '80%',
+              height: 220,
               zIndex: 20,
             }}
           >

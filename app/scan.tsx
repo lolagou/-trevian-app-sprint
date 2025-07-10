@@ -26,9 +26,11 @@ export default function Scan() {
   const handleScan = async () => {
     try {
       if (Platform.OS === 'ios') {
-        const filePath = await ObjectCaptureModule.startObjectCapture();
-        console.log('Archivo capturado en:', filePath);
-        router.push({ pathname: '/result', params: { filePath } });
+        // 🔁 Ejecuta la vista nativa de escaneo
+        await ObjectCaptureModule.startObjectCapture();
+
+        // 👉 NO HACEMOS PUSH DESDE ACÁ — lo hace Swift con el evento `goToResult`
+        console.log('📷 Escaneo iniciado desde React Native');
       } else {
         Alert.alert('Función no disponible', 'Solo funciona en iPhones con LiDAR');
       }

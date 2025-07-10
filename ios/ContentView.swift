@@ -1,3 +1,4 @@
+
 import SwiftUI
 import RealityKit
 import UIKit
@@ -10,35 +11,19 @@ struct ContentView: View {
 
     @State private var photogrammetrySession: PhotogrammetrySession?
     @State private var isProgressing = false
-    @State private var quickLookIsPresented = false
 
     @State private var passCount: Int = 0
     private let maxPasses = 1
 
     var modelPath: URL? {
-        return modelFolderPath?.appending(path: "model.usdz")
+        return modelFolderPath?.appendingPathComponent("model.usdz")
     }
 
     var body: some View {
         ZStack(alignment: .bottom) {
             VStack(spacing: 16) {
-                // ✅ BOTÓN DE TEST SIEMPRE VISIBLE
-                Button("📦 Ver modelo de prueba") {
-                    if let path = Bundle.main.path(forResource: "model", ofType: "usdz") {
-                        let fileURL = URL(fileURLWithPath: path)
-                        print("✅ Cargando modelo desde: \(fileURL)")
-                        showNativeModelView(with: fileURL)
-                    } else {
-                        print("❌ No se encontró model.usdz en el bundle")
-                    }
-                }
-                .font(.caption)
-                .foregroundColor(.yellow)
-                .padding(.bottom, 8)
-
-                if session == nil && !isProgressing && !quickLookIsPresented {
+                if session == nil && !isProgressing {
                     Spacer()
-
                     Button("Iniciar Escaneo") {
                         startNewScanWorkflow()
                     }
@@ -47,7 +32,6 @@ struct ContentView: View {
                     .background(Color.blue)
                     .foregroundColor(.white)
                     .clipShape(Capsule())
-
                     Spacer()
                 } else if session != nil {
                     ObjectCaptureView(session: session!)
@@ -118,16 +102,6 @@ struct ContentView: View {
         }
     }
 
-    private func showNativeModelView(with url: URL) {
-        let vc = ModelPreviewController(modelPath: url)
-        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-           let rootVC = windowScene.windows.first?.rootViewController {
-            rootVC.present(vc, animated: true, completion: nil)
-        } else {
-            print("❌ No se pudo presentar la vista nativa")
-        }
-    }
-
     func startNewScanWorkflow() {
         passCount = 0
         guard let baseScanDir = createTimestampedScanFolder() else { return }
@@ -154,55 +128,64 @@ struct ContentView: View {
 
     func startReconstruction() async {
         guard let allImagesFolder = rootImageFolder,
-              let modelDir = modelFolderPath else { return }
+        let modelDir = modelFolderPath else { return }
 
-        isProgressing = true
+    isProgressing = true
 
-        do {
-            var config = PhotogrammetrySession.Configuration()
-            config.featureSensitivity = .high
-            config.sampleOrdering = .sequential
-            let session = try PhotogrammetrySession(input: allImagesFolder, configuration: config)
-            photogrammetrySession = session
+    do {
+        var config = PhotogrammetrySession.Configuration()
+        config.featureSensitivity = .high
+        config.sampleOrdering = .sequential
+        let session = try PhotogrammetrySession(input: allImagesFolder, configuration: config)
+        photogrammetrySession = session
 
-            let request = PhotogrammetrySession.Request.modelFile(
-                url: modelDir.appendingPathComponent("model.usdz"),
-                detail: .reduced
-            )
+        let request = PhotogrammetrySession.Request.modelFile(
+            url: modelDir.appendingPathComponent("model.usdz"),
+            detail: .reduced
+        )
 
-            try session.process(requests: [request])
+        try session.process(requests: [request])
 
-            for try await output in session.outputs {
-                switch output {
-                case .processingComplete:
-                    isProgressing = false
-                    showNativeModelView(with: modelDir.appendingPathComponent("model.usdz"))
+        for try await output in session.outputs {
+            switch output {
+            case .processingComplete:
+                isProgressing = false
+                let finalModelURL = modelDir.appendingPathComponent("model.usdz")
 
-                case .requestError(_, let err):
-                    print("⚠️ Photogrammetry Error: \(err)")
-                    isProgressing = false
-                    photogrammetrySession = nil
-
-                case .processingCancelled:
-                    print("⚠️ Photogrammetry cancelada.")
-                    isProgressing = false
-                    photogrammetrySession = nil
-
-                default:
-                    break
+                // 👇 Mostramos ModelPreviewController desde Swift
+                DispatchQueue.main.async {
+                    let preview = ModelPreviewController(modelPath: finalModelURL)
+                    if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                       let rootVC = windowScene.windows.first?.rootViewController {
+                        rootVC.present(preview, animated: true, completion: nil)
+                    }
                 }
+
+            case .requestError(_, let err):
+                print("⚠️ Photogrammetry Error: \(err)")
+                isProgressing = false
+                photogrammetrySession = nil
+
+            case .processingCancelled:
+                print("⚠️ Photogrammetry cancelada.")
+                isProgressing = false
+                photogrammetrySession = nil
+
+            default:
+                break
             }
-        } catch {
-            print("❌ Photogrammetry falló: \(error)")
-            isProgressing = false
         }
+    } catch {
+        print("❌ Photogrammetry falló: \(error)")
+        isProgressing = false
     }
+}
+
 
     func resetAll() {
         session = nil
         photogrammetrySession = nil
         isProgressing = false
-        quickLookIsPresented = false
         passCount = 0
 
         if let documents = try? FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true) {
