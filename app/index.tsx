@@ -108,8 +108,8 @@ export default function IndexScreen() {
               transform: [{ translateY: cubeY }],
               position: 'absolute',
               top: '34%',
-              width: '80%',
-              height: 220,
+              width: '50%',
+              height: 150,
               zIndex: 20,
             }}
           >
@@ -123,7 +123,7 @@ export default function IndexScreen() {
                   0.1,
                   1000
                 );
-                camera.position.z = 3;
+                camera.position.z = 1;
 
                 const renderer = new Renderer({ gl });
                 renderer.setSize(gl.drawingBufferWidth, gl.drawingBufferHeight);

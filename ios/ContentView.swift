@@ -1,16 +1,17 @@
-
 import SwiftUI
 import RealityKit
 import UIKit
 
 struct ContentView: View {
     var onModelGenerated: (URL) -> Void = { _ in }
+
     @State private var session: ObjectCaptureSession?
     @State private var rootImageFolder: URL?
     @State private var modelFolderPath: URL?
 
     @State private var photogrammetrySession: PhotogrammetrySession?
     @State private var isProgressing = false
+    @State private var showCaptureView = true  // ✅ NUEVO: controla si se muestra la vista de captura
 
     @State private var passCount: Int = 0
     private let maxPasses = 1
@@ -33,7 +34,7 @@ struct ContentView: View {
                     .foregroundColor(.white)
                     .clipShape(Capsule())
                     Spacer()
-                } else if session != nil {
+                } else if session != nil && showCaptureView {
                     ObjectCaptureView(session: session!)
                         .edgesIgnoringSafeArea(.all)
 
@@ -97,6 +98,7 @@ struct ContentView: View {
         }
         .onChange(of: session?.state) { _, newState in
             if newState == .completed {
+                showCaptureView = false  // ✅ EVITA crash de session deinitialized
                 Task { await startReconstruction() }
             }
         }
@@ -128,64 +130,67 @@ struct ContentView: View {
 
     func startReconstruction() async {
         guard let allImagesFolder = rootImageFolder,
-        let modelDir = modelFolderPath else { return }
+              let modelDir = modelFolderPath else { return }
 
-    isProgressing = true
+        isProgressing = true
 
-    do {
-        var config = PhotogrammetrySession.Configuration()
-        config.featureSensitivity = .high
-        config.sampleOrdering = .sequential
-        let session = try PhotogrammetrySession(input: allImagesFolder, configuration: config)
-        photogrammetrySession = session
+        do {
+            var config = PhotogrammetrySession.Configuration()
+            config.featureSensitivity = .high
+            config.sampleOrdering = .sequential
 
-        let request = PhotogrammetrySession.Request.modelFile(
-            url: modelDir.appendingPathComponent("model.usdz"),
-            detail: .reduced
-        )
+            let session = try PhotogrammetrySession(input: allImagesFolder, configuration: config)
+            photogrammetrySession = session
 
-        try session.process(requests: [request])
+            let request = PhotogrammetrySession.Request.modelFile(
+                url: modelDir.appendingPathComponent("model.usdz"),
+                detail: .reduced
+            )
 
-        for try await output in session.outputs {
-            switch output {
-            case .processingComplete:
-                isProgressing = false
-                let finalModelURL = modelDir.appendingPathComponent("model.usdz")
+            try session.process(requests: [request])
 
-                // 👇 Mostramos ModelPreviewController desde Swift
-                DispatchQueue.main.async {
-                    let preview = ModelPreviewController(modelPath: finalModelURL)
-                    if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                       let rootVC = windowScene.windows.first?.rootViewController {
-                        rootVC.present(preview, animated: true, completion: nil)
-                    }
-                }
+            for try await output in session.outputs {
+                switch output {
+                case .processingComplete:
+                    isProgressing = false
+                    let finalModelURL = modelDir.appendingPathComponent("model.usdz")
 
-            case .requestError(_, let err):
-                print("⚠️ Photogrammetry Error: \(err)")
-                isProgressing = false
-                photogrammetrySession = nil
-
-            case .processingCancelled:
-                print("⚠️ Photogrammetry cancelada.")
-                isProgressing = false
-                photogrammetrySession = nil
-
-            default:
-                break
-            }
-        }
-    } catch {
-        print("❌ Photogrammetry falló: \(error)")
-        isProgressing = false
+                    // ✅ Mostramos el preview del modelo con ejes en vista nativa
+                    DispatchQueue.main.async {
+                        let preview = ModelPreviewController(modelPath: finalModelURL)
+                        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                           let rootVC = windowScene.windows.first?.rootViewController {
+                            rootVC.present(preview, animated: true, completion: nil)
+                        } else {
+                        print("❌ No se encontró RootVC para presentar ModelPreviewController")
     }
-}
+                    }
 
+                case .requestError(_, let err):
+                    print("⚠️ Photogrammetry Error: \(err)")
+                    isProgressing = false
+                    photogrammetrySession = nil
+
+                case .processingCancelled:
+                    print("⚠️ Photogrammetry cancelada.")
+                    isProgressing = false
+                    photogrammetrySession = nil
+
+                default:
+                    break
+                }
+            }
+        } catch {
+            print("❌ Photogrammetry falló: \(error)")
+            isProgressing = false
+        }
+    }
 
     func resetAll() {
         session = nil
         photogrammetrySession = nil
         isProgressing = false
+        showCaptureView = true // ✅ Habilitar vista de nuevo
         passCount = 0
 
         if let documents = try? FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true) {
