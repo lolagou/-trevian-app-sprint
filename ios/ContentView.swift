@@ -1,5 +1,6 @@
 import SwiftUI
 import RealityKit
+import UIKit
 
 struct ContentView: View {
     var onModelGenerated: (URL) -> Void = { _ in }
@@ -20,9 +21,24 @@ struct ContentView: View {
 
     var body: some View {
         ZStack(alignment: .bottom) {
-            VStack {
+            VStack(spacing: 16) {
+                // ✅ BOTÓN DE TEST SIEMPRE VISIBLE
+                Button("📦 Ver modelo de prueba") {
+                    if let path = Bundle.main.path(forResource: "model", ofType: "usdz") {
+                        let fileURL = URL(fileURLWithPath: path)
+                        print("✅ Cargando modelo desde: \(fileURL)")
+                        showNativeModelView(with: fileURL)
+                    } else {
+                        print("❌ No se encontró model.usdz en el bundle")
+                    }
+                }
+                .font(.caption)
+                .foregroundColor(.yellow)
+                .padding(.bottom, 8)
+
                 if session == nil && !isProgressing && !quickLookIsPresented {
                     Spacer()
+
                     Button("Iniciar Escaneo") {
                         startNewScanWorkflow()
                     }
@@ -31,6 +47,7 @@ struct ContentView: View {
                     .background(Color.blue)
                     .foregroundColor(.white)
                     .clipShape(Capsule())
+
                     Spacer()
                 } else if session != nil {
                     ObjectCaptureView(session: session!)
@@ -59,8 +76,7 @@ struct ContentView: View {
                     }
                     .background(Color.black.opacity(0.5))
                 } else if isProgressing {
-                    Spacer(minLength: 0)
-                    Spacer(minLength: 0)
+                    Spacer()
                 }
             }
 
@@ -86,86 +102,59 @@ struct ContentView: View {
         }
         .onChange(of: session?.userCompletedScanPass) { _, newValue in
             guard let passed = newValue, passed else { return }
-
             passCount += 1
-            print("📸 Pasada \(passCount) completada.")
-
             if passCount < maxPasses {
                 if #available(iOS 17.0, *) {
-                    print("➡️ Avanzando a la siguiente pasada con beginNewScanPass()")
                     session?.beginNewScanPass()
-                } else {
-                    print("⚠️ iOS < 17: no es posible continuar la misma sesión sin reiniciar.")
                 }
             } else {
-                print("✅ Todas las pasadas completadas. Llamando a session.finish()")
                 session?.finish()
             }
         }
         .onChange(of: session?.state) { _, newState in
             if newState == .completed {
-                print("🔄 session.state llegó a .completed → arrancando Photogrammetry")
                 Task { await startReconstruction() }
             }
         }
     }
 
+    private func showNativeModelView(with url: URL) {
+        let vc = ModelPreviewController(modelPath: url)
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let rootVC = windowScene.windows.first?.rootViewController {
+            rootVC.present(vc, animated: true, completion: nil)
+        } else {
+            print("❌ No se pudo presentar la vista nativa")
+        }
+    }
+
     func startNewScanWorkflow() {
         passCount = 0
-
-        guard let baseScanDir = createTimestampedScanFolder() else {
-            print("❌ No pude crear la carpeta raíz de escaneo.")
-            return
-        }
+        guard let baseScanDir = createTimestampedScanFolder() else { return }
 
         rootImageFolder = baseScanDir.appendingPathComponent("Images/", isDirectory: true)
         modelFolderPath = baseScanDir.appendingPathComponent("Models/", isDirectory: true)
 
-        do {
-            try FileManager.default.createDirectory(at: rootImageFolder!, withIntermediateDirectories: true)
-            try FileManager.default.createDirectory(at: modelFolderPath!, withIntermediateDirectories: true)
-        } catch {
-            print("❌ Error creando carpetas raíz: \(error)")
-            return
-        }
+        try? FileManager.default.createDirectory(at: rootImageFolder!, withIntermediateDirectories: true)
+        try? FileManager.default.createDirectory(at: modelFolderPath!, withIntermediateDirectories: true)
 
         session = ObjectCaptureSession()
         session?.start(imagesDirectory: rootImageFolder!)
     }
 
-    private func createTimestampedScanFolder() -> URL? {
+    func createTimestampedScanFolder() -> URL? {
         guard let documents = try? FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true) else { return nil }
-
         let scansRoot = documents.appendingPathComponent("Scans/", isDirectory: true)
-        if !FileManager.default.fileExists(atPath: scansRoot.path) {
-            do {
-                try FileManager.default.createDirectory(at: scansRoot, withIntermediateDirectories: true)
-            } catch {
-                print("❌ Error creando carpeta Scans/: \(error)")
-                return nil
-            }
-        }
-
-        let formatter = ISO8601DateFormatter()
-        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-        let timestamp = formatter.string(from: Date())
-
+        try? FileManager.default.createDirectory(at: scansRoot, withIntermediateDirectories: true)
+        let timestamp = ISO8601DateFormatter().string(from: Date())
         let newScanDir = scansRoot.appendingPathComponent(timestamp, isDirectory: true)
-        do {
-            try FileManager.default.createDirectory(at: newScanDir, withIntermediateDirectories: true)
-            return newScanDir
-        } catch {
-            print("❌ Error creando carpeta con timestamp: \(error)")
-            return nil
-        }
+        try? FileManager.default.createDirectory(at: newScanDir, withIntermediateDirectories: true)
+        return newScanDir
     }
 
-    private func startReconstruction() async {
+    func startReconstruction() async {
         guard let allImagesFolder = rootImageFolder,
-              let modelDir = modelFolderPath else {
-            print("❌ No tengo rutas para Photogrammetry.")
-            return
-        }
+              let modelDir = modelFolderPath else { return }
 
         isProgressing = true
 
@@ -173,57 +162,39 @@ struct ContentView: View {
             var config = PhotogrammetrySession.Configuration()
             config.featureSensitivity = .high
             config.sampleOrdering = .sequential
-
             let session = try PhotogrammetrySession(input: allImagesFolder, configuration: config)
             photogrammetrySession = session
 
-            let request = PhotogrammetrySession.Request.modelFile(url: modelDir.appendingPathComponent("model.usdz"), detail: .reduced)
+            let request = PhotogrammetrySession.Request.modelFile(
+                url: modelDir.appendingPathComponent("model.usdz"),
+                detail: .reduced
+            )
 
             try session.process(requests: [request])
 
             for try await output in session.outputs {
                 switch output {
-                case .requestError(let err):
-                    print("📛 Error en Photogrammetry: \(err)")
+                case .processingComplete:
+                    isProgressing = false
+                    showNativeModelView(with: modelDir.appendingPathComponent("model.usdz"))
+
+                case .requestError(_, let err):
+                    print("⚠️ Photogrammetry Error: \(err)")
                     isProgressing = false
                     photogrammetrySession = nil
-                    return
+
                 case .processingCancelled:
                     print("⚠️ Photogrammetry cancelada.")
                     isProgressing = false
                     photogrammetrySession = nil
-                    return
-                case .processingComplete:
-                    print("✅ Photogrammetry completada. Mostrando vista nativa.")
-                    isProgressing = false
-                    photogrammetrySession = nil
-                    let finalModelPath = modelDir.appendingPathComponent("model.usdz")
-                    showNativeModelView(with: finalModelPath)
-                    await uploadUSDZToBackend(fileURL: finalModelPath)
+
                 default:
                     break
                 }
             }
         } catch {
-            print("❌ Al lanzar PhotogrammetrySession: \(error)")
+            print("❌ Photogrammetry falló: \(error)")
             isProgressing = false
-            photogrammetrySession = nil
-        }
-    }
-
-    private func showNativeModelView(with url: URL) {
-        guard FileManager.default.fileExists(atPath: url.path) else {
-            print("❌ El archivo .usdz no existe en: \(url.path)")
-            return
-        }
-
-        let controller = ModelPreviewController(modelPath: url)
-
-        if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-           let rootVC = scene.windows.first?.rootViewController {
-            rootVC.present(controller, animated: true)
-        } else {
-            print("❌ No se pudo presentar ModelPreviewController")
         }
     }
 
@@ -236,60 +207,10 @@ struct ContentView: View {
 
         if let documents = try? FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true) {
             let scansRoot = documents.appendingPathComponent("Scans/", isDirectory: true)
-            if FileManager.default.fileExists(atPath: scansRoot.path) {
-                do {
-                    try FileManager.default.removeItem(at: scansRoot)
-                    print("🗑️ Carpeta Scans/ borrada.")
-                } catch {
-                    print("⚠️ Error borrando Scans/: \(error)")
-                }
-            }
+            try? FileManager.default.removeItem(at: scansRoot)
         }
 
         rootImageFolder = nil
         modelFolderPath = nil
-    }
-}
-
-func uploadUSDZToBackend(fileURL: URL) async {
-    print("Comenzando la subida del modelo al backend")
-    let uploadURL = URL(string: "https://trevian-server.vercel.app/models/upload")!
-
-    var request = URLRequest(url: uploadURL)
-    request.httpMethod = "POST"
-
-    let boundary = UUID().uuidString
-    request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
-
-    guard let fileData = try? Data(contentsOf: fileURL) else {
-        print("❌ No se pudo leer el archivo USDZ.")
-        return
-    }
-
-    var body = Data()
-    let filename = "modelo.usdz"
-    let mimetype = "model/vnd.usdz+zip"
-
-    body.append("--\(boundary)\r\n".data(using: .utf8)!)
-    body.append("Content-Disposition: form-data; name=\"file\"; filename=\"\(filename)\"\r\n".data(using: .utf8)!)
-    body.append("Content-Type: \(mimetype)\r\n\r\n".data(using: .utf8)!)
-    body.append(fileData)
-    body.append("\r\n".data(using: .utf8)!)
-    body.append("--\(boundary)--\r\n".data(using: .utf8)!)
-
-    request.httpBody = body
-
-    do {
-        let (data, response) = try await URLSession.shared.data(for: request)
-        if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 {
-            print("✅ Modelo subido con éxito.")
-        } else {
-            print("❌ Error en la respuesta: \(response)")
-            if let string = String(data: data, encoding: .utf8) {
-                print("ℹ️ Backend dijo: \(string)")
-            }
-        }
-    } catch {
-        print("❌ Error al subir el archivo: \(error.localizedDescription)")
     }
 }
