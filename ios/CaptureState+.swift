@@ -2,11 +2,9 @@
 //  CaptureState+.swift
 //  SuperSimpleObjectCapture
 //
-//
 
 import SwiftUI
 import RealityKit
-
 extension ObjectCaptureSession.CaptureState {
     
     var label: String {
@@ -30,4 +28,3 @@ extension ObjectCaptureSession.CaptureState {
         }
     }
 }
-

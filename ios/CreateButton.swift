@@ -1,11 +1,9 @@
-    //
+//
     //  CreateButton.swift
     //  SuperSimpleObjectCapture
     //
-
     import SwiftUI
     import RealityKit
-
     @MainActor
     struct CreateButton: View {
         let session: ObjectCaptureSession

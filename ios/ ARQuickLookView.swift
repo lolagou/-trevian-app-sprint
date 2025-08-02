@@ -45,6 +45,7 @@ struct ARQuickLookView: UIViewControllerRepresentable {
         }
     }
 }
+
 extension ARQuickLookView {
     
     class QLPreviewControllerWrapper: UIViewController {
@@ -61,4 +62,3 @@ extension ARQuickLookView {
         }
     }
 }
-

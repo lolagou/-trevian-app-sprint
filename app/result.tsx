@@ -27,22 +27,6 @@ export default function Result() {
     }).start();
   }, []);
 
-  // 🎯 ESCUCHA EL EVENTO DESDE SWIFT
-  useEffect(() => {
-    const eventEmitter = new NativeEventEmitter(NativeModules.ModelPreviewModule);
-    const subscription = eventEmitter.addListener('goToResult', (event) => {
-      console.log('📨 Evento recibido desde Swift:', event);
-      const filePathFromSwift = event.filePath;
-      if (filePathFromSwift) {
-        router.replace({ pathname: '/result', params: { filePath: filePathFromSwift } });
-      }
-    });
-
-    return () => {
-      subscription.remove();
-    };
-  }, []);
-
   useEffect(() => {
     if (!filePath) return;
     console.log("📥 Result.tsx recibió filePath desde Swift:", filePath);

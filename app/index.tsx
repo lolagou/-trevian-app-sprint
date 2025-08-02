@@ -1,4 +1,3 @@
-// src/app/IndexScreen.tsx
 
 import React, { useRef, useEffect, useState } from 'react';
 import {
@@ -9,6 +8,7 @@ import {
   TouchableOpacity,
   Image,
   Switch,
+  Dimensions,
 } from 'react-native';
 import { GLView } from 'expo-gl';
 import { useRouter } from 'expo-router';
@@ -18,6 +18,8 @@ import { Asset } from 'expo-asset';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Renderer } from 'expo-three';
+
+const { width } = Dimensions.get('window');
 
 export default function IndexScreen() {
   const router = useRouter();
@@ -29,6 +31,9 @@ export default function IndexScreen() {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const uiY = useRef(new Animated.Value(100)).current;
   const cubeY = useRef(new Animated.Value(200)).current;
+  const cubeTranslateX = useRef(new Animated.Value(0)).current;
+  const cubeScale = useRef(new Animated.Value(1)).current;
+  const cubeOpacity = useRef(new Animated.Value(1)).current;
   const [isDarkMode, setIsDarkMode] = useState(true);
 
   useEffect(() => {
@@ -50,8 +55,67 @@ export default function IndexScreen() {
     return () => timers.forEach(clearTimeout);
   }, []);
 
+  useEffect(() => {
+    if (showCube) {
+      const loop = Animated.loop(
+        Animated.sequence([
+          Animated.parallel([
+            Animated.timing(cubeTranslateX, {
+              toValue: -width,
+              duration: 1000,
+              useNativeDriver: true,
+            }),
+            Animated.timing(cubeScale, {
+              toValue: 0.8,
+              duration: 1000,
+              useNativeDriver: true,
+            }),
+            Animated.timing(cubeOpacity, {
+              toValue: 0,
+              duration: 1000,
+              useNativeDriver: true,
+            }),
+          ]),
+          Animated.parallel([
+            Animated.timing(cubeTranslateX, {
+              toValue: width,
+              duration: 0,
+              useNativeDriver: true,
+            }),
+            Animated.timing(cubeScale, {
+              toValue: 1.2,
+              duration: 0,
+              useNativeDriver: true,
+            }),
+          ]),
+          Animated.parallel([
+            Animated.timing(cubeTranslateX, {
+              toValue: 0,
+              duration: 1000,
+              useNativeDriver: true,
+            }),
+            Animated.timing(cubeScale, {
+              toValue: 1,
+              duration: 1000,
+              useNativeDriver: true,
+            }),
+            Animated.timing(cubeOpacity, {
+              toValue: 1,
+              duration: 1000,
+              useNativeDriver: true,
+            }),
+          ]),
+          Animated.delay(800),
+        ])
+      );
+      loop.start();
+      return () => loop.stop();
+    }
+  }, [showCube]);
+
   const backgroundColor = isDarkMode ? '#02001A' : '#CBFFEF';
   const lineColor = isDarkMode ? '#CBFFEF' : '#05003F';
+  const textColor = isDarkMode ? '#D2FFF2' : '#05003F';
   const buttonBackground = isDarkMode ? '#6DFFD5' : '#05003F';
   const buttonTextColor = isDarkMode ? '#05003F' : '#CBFFEF';
   const shadowSource = isDarkMode
@@ -61,7 +125,6 @@ export default function IndexScreen() {
   return (
     <LinearGradient colors={[backgroundColor, backgroundColor]} style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
-        {/* Toggle tema */}
         <View style={styles.themeToggleContainer}>
           <Text style={{ color: lineColor, fontWeight: 'bold', marginRight: 10 }}>
             {isDarkMode ? 'Oscuro' : 'Claro'}
@@ -74,7 +137,6 @@ export default function IndexScreen() {
           />
         </View>
 
-        {/* Logo */}
         {showLogo && (
           <Animated.View style={[styles.logoContainer, { opacity: fadeAnim }]}>
             <Image
@@ -85,7 +147,6 @@ export default function IndexScreen() {
           </Animated.View>
         )}
 
-        {/* Gradiente */}
         {showGradient && (
           <Animated.View style={[styles.gradientContainer, { opacity: fadeAnim }]}>
             <Image
@@ -96,102 +157,86 @@ export default function IndexScreen() {
           </Animated.View>
         )}
 
-        {/* Sombra */}
-        {showShadow && (
-          <Image source={shadowSource} style={styles.shadowImage} resizeMode="contain" />
-        )}
-
-        {/* GLView con modelo .glb */}
         {showCube && (
-          <Animated.View
-            style={{
-              transform: [{ translateY: cubeY }],
-              position: 'absolute',
-              top: '34%',
-              width: '50%',
-              height: 150,
-              zIndex: 20,
-            }}
-          >
-            <GLView
-              style={{ width: '100%', height: '100%' }}
-              onContextCreate={async (gl: any) => {
-                const scene = new THREE.Scene();
-                const camera = new THREE.PerspectiveCamera(
-                  75,
-                  gl.drawingBufferWidth / gl.drawingBufferHeight,
-                  0.1,
-                  1000
-                );
-                camera.position.z = 1;
-
-                const renderer = new Renderer({ gl });
-                renderer.setSize(gl.drawingBufferWidth, gl.drawingBufferHeight);
-                renderer.setPixelRatio(window.devicePixelRatio);
-
-                scene.add(new THREE.AmbientLight(0xffffff, 1.2));
-                const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
-                dirLight.position.set(5, 5, 5);
-                scene.add(dirLight);
-
-                // Cargar el .glb
-                const asset = Asset.fromModule(require('../assets/models/Cube.glb'));
-                await asset.downloadAsync();
-
-                const loader = new GLTFLoader();
-                loader.load(
-                  asset.localUri || asset.uri,
-                  (gltf: any) => {
-                    const model = gltf.scene;
-                    model.scale.set(1, 1, 1);
-                    model.position.y = 0;
-
-                    model.traverse((child: any) => {
-                      if (child.isMesh) {
-                        const mat = child.material as THREE.MeshStandardMaterial;
-                        mat.color.set('#6DFFD5');
-                        mat.needsUpdate = true;
-                      }
-                    });
-
-                    scene.add(model);
-
-                    const animate = () => {
-                      requestAnimationFrame(animate);
-                      model.rotation.y += 0.01;
-                      model.rotation.x += 0.005;
-                      renderer.render(scene, camera);
-                      gl.endFrameEXP();
-                    };
-                    animate();
-                  },
-                  undefined,
-                  (error: any) => {
-                    console.error('Error al cargar .glb:', error);
-                  }
-                );
+          <>
+            <Animated.View
+              style={{
+                transform: [
+                  { translateY: cubeY },
+                  { translateX: cubeTranslateX },
+                  { scale: cubeScale },
+                ],
+                opacity: cubeOpacity,
+                position: 'absolute',
+                top: '34%',
+                width: '30%',
+                height: 150,
+                zIndex: 20,
+                alignItems: 'center',
               }}
-            />
-          </Animated.View>
+            >
+              <GLView
+                style={{ width: '100%', height: '100%' }}
+                onContextCreate={async (gl: any) => {
+                  const scene = new THREE.Scene();
+                  const camera = new THREE.PerspectiveCamera(75, gl.drawingBufferWidth / gl.drawingBufferHeight, 0.1, 1000);
+                  camera.position.z = 1;
+                  const renderer = new Renderer({ gl });
+                  renderer.setSize(gl.drawingBufferWidth, gl.drawingBufferHeight);
+                  renderer.setPixelRatio(window.devicePixelRatio);
+                  scene.add(new THREE.AmbientLight(0xffffff, 1.2));
+                  const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+                  dirLight.position.set(5, 5, 5);
+                  scene.add(dirLight);
+                  const asset = Asset.fromModule(require('../assets/models/Cube.glb'));
+                  await asset.downloadAsync();
+                  const loader = new GLTFLoader();
+                  loader.load(
+                    asset.localUri || asset.uri,
+                    (gltf: any) => {
+                      const model = gltf.scene;
+                      model.scale.set(1, 1, 1);
+                      model.position.y = 0;
+                      model.traverse((child: any) => {
+                        if (child.isMesh) {
+                          const mat = child.material as THREE.MeshStandardMaterial;
+                          mat.color.set('#6DFFD5');
+                          mat.needsUpdate = true;
+                        }
+                      });
+                      scene.add(model);
+                      const animate = () => {
+                        requestAnimationFrame(animate);
+                        model.rotation.y += 0.01;
+                        model.rotation.x += 0.005;
+                        renderer.render(scene, camera);
+                        gl.endFrameEXP();
+                      };
+                      animate();
+                    },
+                    undefined,
+                    (error: any) => console.error('Error al cargar .glb:', error)
+                  );
+                }}
+              />
+              <Image source={shadowSource} style={styles.shadowImage} resizeMode="contain" />
+              <Text style={{ color: textColor, fontSize: 18, textAlign: 'center', paddingHorizontal: -80, maxWidth: '100%',}}>
+                Explicación muy abarcativa
+              </Text>
+            </Animated.View>
+          </>
         )}
 
-        {/* UI final */}
         {showUI && (
           <Animated.View
             style={{ transform: [{ translateY: uiY }], alignItems: 'center', zIndex: 30, marginTop: 350 }}
           >
-            <View style={styles.decorativeLines}>
-              <View style={[styles.line, { backgroundColor: lineColor, opacity: 0.2 }]} />
-              <View style={[styles.line, { backgroundColor: lineColor, opacity: 0.2 }]} />
-              <View style={[styles.line, { backgroundColor: lineColor, opacity: 0.2 }]} />
-            </View>
+
             <TouchableOpacity
               style={[styles.button, { backgroundColor: buttonBackground, shadowColor: buttonBackground }]}
               onPress={() => router.push('/mustlogin')}
             >
-              <Text style={[styles.buttonText, { color: buttonTextColor }]}>
-                CREÁ TU PLANTILLA
-              </Text>
+              <Text style={[styles.buttonText, { color: buttonTextColor }]}>CREÁ TU PLANTILLA</Text>
             </TouchableOpacity>
           </Animated.View>
         )}
@@ -230,12 +275,10 @@ const styles = StyleSheet.create({
     opacity: 1,
   },
   shadowImage: {
-    position: 'absolute',
-    top: '64%',
     width: 250,
     height: 70,
+    marginTop: 10,
     alignSelf: 'center',
-    zIndex: 10,
     opacity: 0.7,
   },
   decorativeLines: { marginBottom: 40, alignItems: 'center', gap: 6 },
