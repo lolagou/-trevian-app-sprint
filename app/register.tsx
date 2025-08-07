@@ -51,7 +51,7 @@ export default function Register() {
         style={{ flex: 1 }}
       >
         <Animated.View style={{ opacity: fadeAnim }}>
-          <Text style={styles.header}>REGISTRATE</Text>
+          <Text style={styles.header}>REGISTRO</Text>
 
           <View style={styles.form}>
             <View style={styles.field}>
@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 24,
     justifyContent: 'center',
-    backgroundColor: '#02001A',
+    backgroundColor: '#020016',
   },
   header: {
     color: '#CBFFEF',

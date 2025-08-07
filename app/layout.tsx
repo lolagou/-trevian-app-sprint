@@ -1,4 +1,5 @@
 import { Stack } from 'expo-router';
+import { useFonts } from 'expo-font';
 import NavigationBridge from '../components/NavigationBridge'; // ✅ Ajustá el path si lo tenés en otra carpeta
 
 export default function Layout() {
@@ -8,4 +9,6 @@ export default function Layout() {
       <Stack screenOptions={{ headerShown: false }} />
     </>
   );
+
+  
 }

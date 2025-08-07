@@ -22,7 +22,9 @@
     "react-native": "^0.79.4",
     "react-native-safe-area-context": "5.4.0",
     "three": "^0.145.0",
-    "three-stdlib": "^2.36.0"
+    "three-stdlib": "^2.36.0",
+    "expo-font": "~13.3.2",
+    "expo-splash-screen": "~0.30.10"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
