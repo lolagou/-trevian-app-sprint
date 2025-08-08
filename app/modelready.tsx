@@ -7,23 +7,29 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
+  ScrollView,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import CustomButton from '../components/CustomButton'; // Asegurate que la ruta sea correcta
+import CustomButton from '../components/CustomButton';
 
 export default function ModelReadyScreen() {
-  const [address, setAddress] = useState('');
   const router = useRouter();
 
+  const [province, setProvince] = useState('');
+  const [city, setCity] = useState('');
+  const [street, setStreet] = useState('');
+  const [number, setNumber] = useState('');
+  const [postalCode, setPostalCode] = useState('');
+  const [details, setDetails] = useState('');
+
   const handleContinue = () => {
-    if (!address.trim()) {
-      Alert.alert('Campo incompleto', 'Por favor ingresá tu domicilio.');
+    if (!province || !city || !street || !number || !postalCode) {
+      Alert.alert('Faltan campos', 'Completá todos los datos obligatorios.');
       return;
     }
 
-    console.log('🏠 Domicilio ingresado:', address);
-    // Aquí podés enviar el domicilio al backend si querés
-    router.push('/confirmacion'); // redirigí a la pantalla que corresponda
+    console.log('📦 Domicilio:', { province, city, street, number, postalCode, details });
+    router.push('/confirmacion');
   };
 
   return (
@@ -31,18 +37,85 @@ export default function ModelReadyScreen() {
       style={styles.container}
       behavior={Platform.select({ ios: 'padding', android: undefined })}
     >
-      <Text style={styles.title}>Modelo procesado correctamente</Text>
-      <Text style={styles.subtitle}>Ingresá tu domicilio para continuar con el pedido.</Text>
+      <ScrollView contentContainerStyle={styles.scroll}>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Ej: Av. Santa Fe 1234"
-        placeholderTextColor="#88ffdd"
-        value={address}
-        onChangeText={setAddress}
-      />
+        <View style={styles.form}>
+          <View style={styles.row}>
+            <View style={styles.field}>
+              <Text style={styles.label}>PROVINCIA</Text>
+              <TextInput
+                style={styles.input}
+                value={province}
+                onChangeText={setProvince}
+                placeholder="Ej: Buenos Aires"
+                placeholderTextColor="#6DFFD5"
+              />
+            </View>
 
-      <CustomButton text="Continuar" onPress={handleContinue} />
+            <View style={styles.field}>
+              <Text style={styles.label}>CIUDAD</Text>
+              <TextInput
+                style={styles.input}
+                value={city}
+                onChangeText={setCity}
+                placeholder="Ej: CABA"
+                placeholderTextColor="#6DFFD5"
+              />
+            </View>
+          </View>
+
+          <View style={styles.row}>
+            <View style={styles.field}>
+              <Text style={styles.label}>CALLE</Text>
+              <TextInput
+                style={styles.input}
+                value={street}
+                onChangeText={setStreet}
+                placeholder="Ej: Corrientes"
+                placeholderTextColor="#6DFFD5"
+              />
+            </View>
+
+            <View style={styles.field}>
+              <Text style={styles.label}>ALTURA</Text>
+              <TextInput
+                style={styles.input}
+                value={number}
+                onChangeText={setNumber}
+                placeholder="Ej: 1234"
+                placeholderTextColor="#6DFFD5"
+                keyboardType="numeric"
+              />
+            </View>
+          </View>
+
+          <View style={styles.row}>
+            <View style={styles.field}>
+              <Text style={styles.label}>CÓDIGO POSTAL</Text>
+              <TextInput
+                style={styles.input}
+                value={postalCode}
+                onChangeText={setPostalCode}
+                placeholder="Ej: 1001"
+                placeholderTextColor="#6DFFD5"
+              />
+            </View>
+
+            <View style={styles.field}>
+              <Text style={styles.label}>DETALLES</Text>
+              <TextInput
+                style={styles.input}
+                value={details}
+                onChangeText={setDetails}
+                placeholder="Piso, depto, etc"
+                placeholderTextColor="#6DFFD5"
+              />
+            </View>
+          </View>
+        </View>
+
+        <CustomButton text="SIGUIENTE" onPress={handleContinue} />
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 }
@@ -51,30 +124,47 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: '#020016',
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 24,
   },
-  title: {
-    fontSize: 22,
-    color: '#CBFFEF',
+  scroll: {
+    padding: 24,
+    justifyContent: 'center',
+  },
+  header: {
+    color: '#fff',
     fontWeight: 'bold',
-    marginBottom: 16,
-    textAlign: 'center',
+    fontSize: 14,
+    textTransform: 'uppercase',
+    marginBottom: 4,
   },
   subtitle: {
-    fontSize: 16,
     color: '#6DFFD5',
+    fontSize: 16,
     marginBottom: 24,
-    textAlign: 'center',
+  },
+  form: {
+    marginBottom: 24,
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 12,
+    marginBottom: 16,
+  },
+  field: {
+    flex: 1,
+  },
+  label: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: 'bold',
+    marginBottom: 4,
   },
   input: {
-    borderWidth: 1,
+    borderBottomWidth: 2,
     borderColor: '#6DFFD5',
-    borderRadius: 10,
-    color: '#ffffff',
-    padding: 12,
-    marginBottom: 20,
-    width: '100%',
+    color: '#fff',
+    paddingVertical: 6,
+    paddingHorizontal: 8,
+    fontSize: 14,
   },
 });
