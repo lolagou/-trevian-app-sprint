@@ -13,6 +13,9 @@ import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
 import CTAButton from '../components/CTAButton';
+import IconButton from '../components/IconButton';
+import { Ionicons } from '@expo/vector-icons';
+import { TouchableOpacity } from 'react-native';
 
 export default function Register() {
   const [name, setName] = useState('');
@@ -21,6 +24,9 @@ export default function Register() {
   const [password, setPassword] = useState('');
   const router = useRouter();
   const fadeAnim = useRef(new Animated.Value(0)).current;
+  const [passwordVisible, setPasswordVisible] = useState(false);
+
+
 
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -41,10 +47,10 @@ export default function Register() {
 
   return (
     <LinearGradient
-      colors={['#020016', '#020016', '#6DFFD5']}
-      start={{ x: 1, y: 0 }}
-      end={{ x: 0, y: 1 }}
-      style={styles.gradient}
+    colors={['#6DFFD5','#020016', '#020016','#020016', '#020016','#6DFFD5']}
+    start={{ x: 1.3, y: 0 }}
+    end={{ x: 0.005, y: 1 }}
+    style={styles.gradient}
     >
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -87,17 +93,46 @@ export default function Register() {
             </View>
 
             <View style={styles.field}>
-              <Text style={styles.label}>CONTRASEÑA:</Text>
-              <TextInput
-                style={styles.input}
-                placeholderTextColor="#9AA"
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry
-              />
-            </View>
+  <Text style={styles.label}>CONTRASEÑA:</Text>
+  <View style={styles.passwordRow}>
+    <TextInput
+      style={[styles.input, { borderWidth: 0, borderColor: 'transparent',flex: 1  }]}
+      placeholderTextColor="#9AA"
+      value={password}
+      onChangeText={setPassword}
+      secureTextEntry={!passwordVisible}
+    />
+    <TouchableOpacity onPress={() => setPasswordVisible(!passwordVisible)} style={styles.eyeIcon}>
+      <Ionicons
+        name={passwordVisible ? 'eye' : 'eye-off'}
+        size={22}
+        color="#CBFFEF"
+      />
+    </TouchableOpacity>
+  </View>
+</View>
 
-            <CTAButton label="REGISTRATE" onPress={handleRegister} />
+
+            <CTAButton label="REGISTRARME" onPress={handleRegister} />
+
+            <View style={styles.LineContainer}>
+            <Image
+              source={require('../assets/linelogin.png')}
+              style={{ width: 290, height: 30 }}
+              resizeMode="contain"
+            />
+          </View>
+
+            <IconButton
+              label="Registrate con Google"
+              icon={require('../assets/google.png')}
+              onPress={() => alert('Google Login')}
+            />
+            <IconButton
+              label="Registrate con Apple"
+              icon={require('../assets/apple.png')}
+              onPress={() => alert('Apple Login')}
+            />
 
             <Text style={styles.registerText}>
               Si tenés cuenta,{' '}
@@ -142,7 +177,7 @@ const styles = StyleSheet.create({
   field: {
     width: 300,
     alignSelf: 'center',
-    marginBottom: 10,
+    marginBottom: 5,
   },
   label: {
     color: '#CBFFEF',
@@ -154,7 +189,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: '#CBFFEF',
     borderRadius: 8,
-    padding: 12,
+    padding: 8,
     color: '#fff',
   },
   registerText: {
@@ -175,4 +210,23 @@ const styles = StyleSheet.create({
     width: 120,
     height: 40,
   },
+
+  LineContainer: {
+    alignItems: 'center',
+
+  },
+
+  passwordRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#CBFFEF',
+    borderRadius: 8,
+    paddingRight: 8,
+  },
+  eyeIcon: {
+    paddingHorizontal: 6,
+    paddingVertical: 8,
+  },
+
 });

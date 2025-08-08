@@ -40,9 +40,9 @@ export default function Login() {
 
   return (
 <LinearGradient
-  colors={['#020016', '#6DFFD5', '#020016']} // 👈 color oscuro arriba y abajo
-  start={{ x: 0.5, y: 0 }}
-  end={{ x: 0.5, y: 1 }}
+  colors={['#6DFFD5','#020016', '#020016','#020016', '#020016','#6DFFD5']}
+  start={{ x: 1.3, y: 0 }}
+  end={{ x: 0.005, y: 1 }}
   style={styles.gradient}
 >
       <KeyboardAvoidingView
@@ -77,6 +77,14 @@ export default function Login() {
             </View>
 
             <CTAButton label="INICIAR SESIÓN" onPress={handleLogin} />
+
+            <View style={styles.LineContainer}>
+            <Image
+              source={require('../assets/linelogin.png')}
+              style={{ width: 290, height: 30 }}
+              resizeMode="contain"
+            />
+          </View>
 
             <IconButton
               label="Inicia sesión con Google"
@@ -131,7 +139,7 @@ const styles = StyleSheet.create({
   field: {
     width: 300,
     alignSelf: 'center',
-    marginBottom: 10,
+    marginBottom: 5,
   },
   label: {
     color: '#CBFFEF',
@@ -143,7 +151,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: '#CBFFEF',
     borderRadius: 8,
-    padding: 12,
+    padding: 8,
     color: '#fff',
   },
   registerText: {
@@ -159,6 +167,11 @@ const styles = StyleSheet.create({
   logoContainer: {
     marginTop: 40,
     alignItems: 'center',
+  },
+
+  LineContainer: {
+    alignItems: 'center',
+
   },
   logo: {
     width: 120,
