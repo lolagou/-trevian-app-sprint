@@ -5,7 +5,7 @@
   "scripts": {
     "start": "expo start",
     "android": "expo run:android",
-    "ios": "expo run:ios",
+    "ios:iphone": "npx react-native run-ios --device \"iPhone 14 pro Lola\"",
     "web": "expo start --web"
   },
   "dependencies": {
@@ -13,21 +13,22 @@
     "expo": "~53.0.10",
     "expo-asset": "^11.1.7",
     "expo-file-system": "^18.1.10",
+    "expo-font": "~13.3.2",
     "expo-gl": "~15.1.6",
     "expo-linear-gradient": "~14.1.5",
     "expo-linking": "^7.1.7",
     "expo-router": "~5.0.7",
+    "expo-splash-screen": "~0.30.10",
     "expo-three": "^7.0.0",
     "react": "^19.0.0",
     "react-native": "^0.79.4",
     "react-native-safe-area-context": "5.4.0",
     "three": "^0.145.0",
-    "three-stdlib": "^2.36.0",
-    "expo-font": "~13.3.2",
-    "expo-splash-screen": "~0.30.10"
+    "three-stdlib": "^2.36.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
+    "@react-native-community/cli": "^19.1.1",
     "@types/react": "^19.1.8",
     "@types/react-native": "^0.72.8",
     "@types/three": "^0.177.0",

@@ -167,7 +167,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'center',
-    marginTop: 60,
+    marginTop: 30,
     marginBottom: 32,
   },
   form: {
@@ -203,7 +203,7 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
   },
   logoContainer: {
-    marginTop: 40,
+    marginTop: 20,
     alignItems: 'center',
   },
   logo: {

@@ -1,4 +1,3 @@
-
 import React, { useRef, useEffect, useState } from 'react';
 import {
   View,
@@ -19,7 +18,6 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Renderer } from 'expo-three';
 
-
 const { width } = Dimensions.get('window');
 
 export default function IndexScreen() {
@@ -35,7 +33,11 @@ export default function IndexScreen() {
   const cubeTranslateX = useRef(new Animated.Value(0)).current;
   const cubeScale = useRef(new Animated.Value(1)).current;
   const cubeOpacity = useRef(new Animated.Value(1)).current;
+
   const [isDarkMode, setIsDarkMode] = useState(true);
+
+  // --- NUEVO: referencia al modelo para poder actualizar color al cambiar el tema ---
+  const cubeRef = useRef<THREE.Object3D | null>(null);
 
   useEffect(() => {
     Animated.timing(fadeAnim, { toValue: 1, duration: 1200, useNativeDriver: true }).start();
@@ -123,6 +125,17 @@ export default function IndexScreen() {
     ? require('../assets/shadow-dark.png')
     : require('../assets/shadow-light.png');
 
+  useEffect(() => {
+    if (!cubeRef.current) return;
+    cubeRef.current.traverse((child: any) => {
+      if (child.isMesh) {
+        const mat = child.material as THREE.MeshStandardMaterial;
+        mat.color.set(isDarkMode ? '#6DFFD5' : '#02001A'); 
+        mat.needsUpdate = true;
+      }
+    });
+  }, [isDarkMode]);
+
   return (
     <LinearGradient colors={[backgroundColor, backgroundColor]} style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
@@ -179,33 +192,55 @@ export default function IndexScreen() {
               <GLView
                 style={{ width: '100%', height: '100%' }}
                 onContextCreate={async (gl: any) => {
+                  // Escena, cámara y renderer
                   const scene = new THREE.Scene();
-                  const camera = new THREE.PerspectiveCamera(75, gl.drawingBufferWidth / gl.drawingBufferHeight, 0.1, 1000);
+                  const camera = new THREE.PerspectiveCamera(
+                    75,
+                    gl.drawingBufferWidth / gl.drawingBufferHeight,
+                    0.1,
+                    1000
+                  );
                   camera.position.z = 1;
+
                   const renderer = new Renderer({ gl });
                   renderer.setSize(gl.drawingBufferWidth, gl.drawingBufferHeight);
-                  renderer.setPixelRatio(window.devicePixelRatio);
+                  
+                  const dpr = (typeof window !== 'undefined' && (window as any).devicePixelRatio) ? (window as any).devicePixelRatio : 1;
+                  renderer.setPixelRatio(dpr);
+
+                 
                   scene.add(new THREE.AmbientLight(0xffffff, 1.2));
                   const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
                   dirLight.position.set(5, 5, 5);
                   scene.add(dirLight);
+
+                  
                   const asset = Asset.fromModule(require('../assets/models/Cube.glb'));
                   await asset.downloadAsync();
+
                   const loader = new GLTFLoader();
                   loader.load(
                     asset.localUri || asset.uri,
                     (gltf: any) => {
-                      const model = gltf.scene;
+                      const model: THREE.Object3D = gltf.scene;
+
+                      // Guardamos referencia global para poder actualizar color en vivo
+                      cubeRef.current = model;
+
                       model.scale.set(1, 1, 1);
                       model.position.y = 0;
+
+                      // Color inicial según tema actual
                       model.traverse((child: any) => {
                         if (child.isMesh) {
                           const mat = child.material as THREE.MeshStandardMaterial;
-                          mat.color.set('#6DFFD5');
+                          mat.color.set(isDarkMode ? '#000000' : '#6DFFD5');
                           mat.needsUpdate = true;
                         }
                       });
+
                       scene.add(model);
+
                       const animate = () => {
                         requestAnimationFrame(animate);
                         model.rotation.y += 0.01;
@@ -221,7 +256,15 @@ export default function IndexScreen() {
                 }}
               />
               <Image source={shadowSource} style={styles.shadowImage} resizeMode="contain" />
-              <Text style={{ color: textColor, fontSize: 18, textAlign: 'center', paddingHorizontal: -80, maxWidth: '100%',}}>
+              <Text
+                style={{
+                  color: textColor,
+                  fontSize: 18,
+                  textAlign: 'center',
+                  paddingHorizontal: -80,
+                  maxWidth: '100%',
+                }}
+              >
                 Explicación muy abarcativa
               </Text>
             </Animated.View>
@@ -232,7 +275,6 @@ export default function IndexScreen() {
           <Animated.View
             style={{ transform: [{ translateY: uiY }], alignItems: 'center', zIndex: 30, marginTop: 350 }}
           >
-
             <TouchableOpacity
               style={[styles.button, { backgroundColor: buttonBackground, shadowColor: buttonBackground }]}
               onPress={() => router.push('/mustlogin')}
