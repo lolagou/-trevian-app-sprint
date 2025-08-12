@@ -14,12 +14,15 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
 import CTAButton from '../components/CTAButton';
 import IconButton from '../components/IconButton';
+import { Ionicons } from '@expo/vector-icons';
+import { TouchableOpacity } from 'react-native';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const router = useRouter();
   const fadeAnim = useRef(new Animated.Value(0)).current;
+  const [passwordVisible, setPasswordVisible] = useState(false);
 
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -66,15 +69,28 @@ export default function Login() {
             </View>
 
             <View style={styles.field}>
-              <Text style={styles.label}>CONTRASEÑA:</Text>
-              <TextInput
-                style={styles.input}
-                placeholderTextColor="#9AA"
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry
-              />
-            </View>
+  <Text style={styles.label}>CONTRASEÑA:</Text>
+  <View style={styles.passwordRow}>
+    <TextInput
+      style={styles.passwordInput}
+      placeholderTextColor="#9AA"
+      value={password}
+      onChangeText={setPassword}
+      secureTextEntry={!passwordVisible}
+    />
+    <TouchableOpacity
+      onPress={() => setPasswordVisible(!passwordVisible)}
+      style={styles.eyeIcon}
+    >
+      <Ionicons
+        name={passwordVisible ? 'eye' : 'eye-off'}
+        size={22}
+        color="#CBFFEF"
+      />
+    </TouchableOpacity>
+  </View>
+</View>
+
 
             <CTAButton label="INICIAR SESIÓN" onPress={handleLogin} />
 
@@ -177,4 +193,24 @@ const styles = StyleSheet.create({
     width: 120,
     height: 40,
   },
+
+  passwordRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: 300, // mismo ancho que el de mail
+    borderWidth: 2,
+    borderColor: '#CBFFEF',
+    borderRadius: 8,
+    paddingRight: 8,
+  },
+  passwordInput: {
+    flex: 1,
+    padding: 8,
+    color: '#fff',
+  },
+
+  eyeIcon: {
+
+  },
+  
 });

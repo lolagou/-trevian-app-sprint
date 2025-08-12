@@ -225,8 +225,7 @@ const styles = StyleSheet.create({
     paddingRight: 8,
   },
   eyeIcon: {
-    paddingHorizontal: 6,
-    paddingVertical: 8,
+
   },
 
 });
