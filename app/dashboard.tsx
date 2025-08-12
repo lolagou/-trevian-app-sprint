@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Dimensions, Switch, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Dimensions, Switch, TouchableOpacity, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 
 const { width } = Dimensions.get('window');
@@ -19,8 +19,24 @@ export default function Dashboard() {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.backgroundColor }]}>
-      
-      {/* Switch para modo claro/oscuro */}
+
+      {darkMode ? (
+        <Image
+          source={require('../assets/mustlogin.png')}
+          style={styles.expandedBackground}
+          resizeMode="cover"
+
+        />
+      ) : (
+        <Image
+          source={require('../assets/dashboardgradient.png')}
+          style={styles.expandedBackground}
+          resizeMode="cover"
+
+        />
+      )}
+
+
       <View style={styles.switchContainer}>
         <Switch
           value={!darkMode}
@@ -30,7 +46,7 @@ export default function Dashboard() {
         />
       </View>
 
-      {/* Top: cuadrado (botón atrás) + círculo */}
+
       <View style={styles.topRow}>
         <TouchableOpacity onPress={() => router.back()}>
           <View style={[styles.square, { backgroundColor: theme.boxBorderColor }]} />
@@ -39,18 +55,17 @@ export default function Dashboard() {
         <View style={[styles.circle, { backgroundColor: theme.circleColor }]} />
       </View>
 
-      {/* Barras */}
+
       <View style={[styles.lineShort, { backgroundColor: theme.lineShort }]} />
       <View style={[styles.lineLong, { backgroundColor: theme.lineLong }]} />
 
-      {/* Cuadrícula 2x2 */}
+
       <View style={styles.grid}>
         {[...Array(4)].map((_, i) => (
           <View key={i} style={[styles.smallBox, { borderColor: theme.boxBorderColor }]} />
         ))}
       </View>
 
-      {/* Caja grande */}
       <View style={[styles.largeBox, { borderColor: theme.boxBorderColor }]} />
     </View>
   );
@@ -59,8 +74,19 @@ export default function Dashboard() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    padding: 20, 
+    overflow: 'hidden', 
   },
+
+
+  expandedBackground: {
+    position: 'absolute',
+    width: 600, // 👉 ajustá esto como quieras (más de lo necesario)
+    height: 1000,
+    top: -100,  // 👉 mové para centrar
+    left: -100,
+  },
+
   switchContainer: {
     alignItems: 'flex-end',
     marginBottom: 10,
