@@ -154,7 +154,7 @@ export default function IndexScreen() {
         {showLogo && (
           <Animated.View style={[styles.logoContainer, { opacity: fadeAnim }]}>
             <Image
-              source={isDarkMode ? require('../assets/logo.png') : require('../assets/logo-oscuro.png')}
+              source={isDarkMode ? require('../assets/logo.png') : require('../assets/treviandark.png')}
               style={styles.logo}
               resizeMode="contain"
             />

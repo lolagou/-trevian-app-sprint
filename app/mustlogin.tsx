@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, Image, StyleSheet, Dimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import CustomButton from '../components/CustomButton';
+import CTAsecundario from '../components/CTAsecundario';
 
 const { width, height } = Dimensions.get('window');
 
@@ -33,9 +34,8 @@ export default function MustLogin() {
           onPress={() => router.push('/login')}
         />
 
-        <CustomButton
+        <CTAsecundario
           text="REGISTRARSE"
-          variant="outline"
           onPress={() => router.push('/register')}
           style={{ marginTop: 16 }}
         />
