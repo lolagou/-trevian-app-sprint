@@ -35,7 +35,7 @@ export default function MustLogin() {
         />
 
         <CTAsecundario
-          text="REGISTRARSE"
+          text="REGISTRATE"
           onPress={() => router.push('/register')}
           style={{ marginTop: 16 }}
         />
