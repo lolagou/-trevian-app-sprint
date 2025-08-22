@@ -48,10 +48,10 @@ export default function IndexScreen() {
       setTimeout(() => setShowGradient(true), 0),
       setTimeout(() => setShowCube(true), 3700),
       setTimeout(() => {
-        Animated.timing(cubeY, { toValue: 0, duration: 800, useNativeDriver: true }).start();
+        Animated.timing(cubeY, { toValue: 0, duration: 500, useNativeDriver: true }).start();
       }, 3900),
       setTimeout(() => {
-        Animated.timing(uiY, { toValue: 0, duration: 1000, useNativeDriver: true }).start();
+        Animated.timing(uiY, { toValue: 0, duration: 1500, useNativeDriver: true }).start();
         setShowUI(true);
       }, 4800),
     ];
@@ -65,12 +65,12 @@ export default function IndexScreen() {
           Animated.parallel([
             Animated.timing(cubeTranslateX, {
               toValue: -width,
-              duration: 1000,
+              duration: 700,
               useNativeDriver: true,
             }),
             Animated.timing(cubeScale, {
               toValue: 0.8,
-              duration: 1000,
+              duration: 700,
               useNativeDriver: true,
             }),
             Animated.timing(cubeOpacity, {
@@ -94,12 +94,12 @@ export default function IndexScreen() {
           Animated.parallel([
             Animated.timing(cubeTranslateX, {
               toValue: 0,
-              duration: 1000,
+              duration: 700,
               useNativeDriver: true,
             }),
             Animated.timing(cubeScale, {
               toValue: 1,
-              duration: 1000,
+              duration: 700,
               useNativeDriver: true,
             }),
             Animated.timing(cubeOpacity, {
@@ -108,7 +108,7 @@ export default function IndexScreen() {
               useNativeDriver: true,
             }),
           ]),
-          Animated.delay(800),
+          Animated.delay(3500),
         ])
       );
       loop.start();
