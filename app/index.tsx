@@ -326,6 +326,6 @@ const styles = StyleSheet.create({
   },
   decorativeLines: { marginBottom: 40, alignItems: 'center', gap: 6 },
   line: { width: 280, height: 6, borderRadius: 4 },
-  button: { paddingVertical: 11, paddingHorizontal: 64, borderRadius: 12, marginTop: 10 },
+  button: { paddingVertical: 11, paddingHorizontal: 64, borderRadius: 12, marginTop: 210 },
   buttonText: { fontSize: 16, fontWeight: 'bold' },
 });

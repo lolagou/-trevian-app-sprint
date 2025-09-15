@@ -57,6 +57,11 @@ export default function Register() {
         style={{ flex: 1 }}
       >
         <Animated.View style={{ opacity: fadeAnim }}>
+        <Image
+              source={require('../assets/Back.png')}
+              style={{ width: 100, height: 30 }}
+              resizeMode="contain"
+            />
           <Text style={styles.header}>REGISTRO</Text>
 
           <View style={styles.form}>

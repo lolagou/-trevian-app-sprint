@@ -32,6 +32,7 @@ export default function MustLogin() {
         <CustomButton
           text="INICIAR SESIÓN"
           onPress={() => router.push('/login')}
+          style={{ marginTop: 106 }}
         />
 
         <CTAsecundario

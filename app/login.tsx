@@ -53,6 +53,11 @@ export default function Login() {
         style={{ flex: 1 }}
       >
         <Animated.View style={{ opacity: fadeAnim }}>
+        <Image
+              source={require('../assets/Back.png')}
+              style={{ width: 130, height: 40 }}
+              resizeMode="contain"
+            />
           <Text style={styles.header}>INICIO DE SESIÓN</Text>
 
           <View style={styles.form}>
