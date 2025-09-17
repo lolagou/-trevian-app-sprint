@@ -1,57 +1,59 @@
 import React from "react";
 import { Button, Alert } from "react-native";
-import DocumentPicker from "react-native-document-picker";
+import * as DocumentPicker from "expo-document-picker";
+import * as FileSystem from "expo-file-system";
+import "react-native-url-polyfill/auto";      // <- necesario para supabase-js en RN
+import { decode } from "base64-arraybuffer";
 import { createClient } from "@supabase/supabase-js";
 
-// 🔑 Tus credenciales de Supabase
-const supabaseUrl = "https://YOUR_PROJECT.supabase.co";
-const supabaseAnonKey = "YOUR_ANON_KEY";
-
+// ⚠️ PONÉ TUS CREDENCIALES
+const supabaseUrl = "https://TU_PROYECTO.supabase.co";
+const supabaseAnonKey = "TU_ANON_KEY";
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export default function UploadUSDZ() {
   const pickAndUploadFile = async () => {
     try {
-      // 1. Seleccionar archivo
-      const res = await DocumentPicker.pickSingle({
-        type: [DocumentPicker.types.allFiles],
-        copyTo: "cachesDirectory",
+      // 1) Elegir archivo (API de Expo)
+      const result = await DocumentPicker.getDocumentAsync({
+        type: ["model/vnd.usdz+zip", "image/*", "application/pdf", "*/*"],
+        multiple: false,
+        copyToCacheDirectory: true,
       });
+      if (result.canceled) return;
 
-      console.log("Archivo seleccionado:", res);
+      const asset = result.assets?.[0];
+      if (!asset?.uri) throw new Error("No se seleccionó archivo");
 
-      // 2. Obtener blob
-      const fileUri = res.fileCopyUri || res.uri;
-      const response = await fetch(fileUri);
-      const fileBlob = await response.blob();
+      // 2) Leer archivo a ArrayBuffer (RN no tiene Blob por defecto)
+      const base64 = await FileSystem.readAsStringAsync(asset.uri, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+      const arrayBuffer = decode(base64);
 
-      // 3. Nombre único
-      const fileName = `models/${Date.now()}-${res.name}`;
+      // 3) Nombre + content-type
+      const fileName = `models/${Date.now()}-${asset.name ?? "archivo.usdz"}`;
+      const contentType = asset.mimeType ?? "application/octet-stream";
 
-      // 4. Subir a Supabase
-      const { data, error } = await supabase.storage
-        .from("usdz-files")
-        .upload(fileName, fileBlob, {
-          contentType: res.type || "model/vnd.usdz+zip",
+      // 4) Subir a Supabase Storage
+      const { error } = await supabase.storage
+        .from("usdz-files")              // <- tu bucket
+        .upload(fileName, arrayBuffer, {
+          contentType,
           upsert: false,
         });
-
       if (error) throw error;
 
-      // 5. URL pública
-      const { data: publicUrlData } = supabase.storage
+      // 5) URL pública
+      const { data: publicData } = supabase.storage
         .from("usdz-files")
         .getPublicUrl(fileName);
 
-      Alert.alert("✅ Subida exitosa", publicUrlData.publicUrl);
-      console.log("Archivo subido en:", publicUrlData.publicUrl);
+      Alert.alert("✅ Subida exitosa", publicData.publicUrl);
+      console.log("URL:", publicData.publicUrl);
     } catch (err: any) {
-      if (DocumentPicker.isCancel(err)) {
-        console.log("Selección cancelada");
-      } else {
-        console.error("Error al subir:", err.message);
-        Alert.alert("❌ Error", err.message);
-      }
+      console.error(err);
+      Alert.alert("❌ Error", err?.message ?? "No se pudo subir el archivo");
     }
   };
 

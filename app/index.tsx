@@ -17,6 +17,7 @@ import { Asset } from 'expo-asset';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Renderer } from 'expo-three';
+import 'react-native-url-polyfill/auto';
 
 const { width } = Dimensions.get('window');
 
