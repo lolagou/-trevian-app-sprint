@@ -1,20 +1,27 @@
 //
-//  ObjectCaptureModuleNew.swift
+//  ObjectCaptureModule.swift
+//  trevianappsprint
 //
+//  Created by Lola Nuñez Gouget on 2/8/25.
+//
+
 import Foundation
 import SwiftUI
-import React   // 👈 importante para RCTPromiseResolveBlock
+import React   // <- Necesario para RCTPromiseResolveBlock / Reject
 
 @objc(ObjectCaptureModule)
 class ObjectCaptureModule: NSObject {
 
   private var presentedVC: UIViewController?
 
+  /// Presenta la UI de escaneo y resuelve con la ruta (file://) del .usdz cuando está listo.
+  /// Uso en RN: `const uri = await NativeModules.ObjectCaptureModule.startObjectCapture();`
   @objc
   func startObjectCapture(_ resolve: @escaping RCTPromiseResolveBlock,
                           rejecter reject: @escaping RCTPromiseRejectBlock) {
 
     DispatchQueue.main.async {
+      // Buscar una ventana/VC para presentar la UI
       guard
         let scene = UIApplication.shared.connectedScenes.compactMap({ $0 as? UIWindowScene }).first,
         let window = scene.windows.first(where: { $0.isKeyWindow }),
@@ -24,13 +31,15 @@ class ObjectCaptureModule: NSObject {
         return
       }
 
-      // 👇 Pasamos el callback onModelReady a la vista
+      // Construimos la vista pasando el callback onModelReady
       let view = ContentView(onModelReady: { [weak self] url in
-        // Devolvemos a RN un file:// URI
         let uri = "file://\(url.path)"
+        print("🔗 Enviando a RN la ruta del USDZ:", uri)
+
+        // Devolver a RN
         resolve(uri)
 
-        // Opcional: cerrar la UI de escaneo automáticamente
+        // (Opcional) cerrar la pantalla de escaneo automáticamente
         self?.presentedVC?.dismiss(animated: true)
         self?.presentedVC = nil
       })

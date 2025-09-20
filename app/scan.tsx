@@ -1,3 +1,4 @@
+// app/scan.tsx
 import React, { useEffect, useRef } from 'react';
 import {
   View,
@@ -7,9 +8,19 @@ import {
   StyleSheet,
   Animated,
   Platform,
+  NativeModules,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { ObjectCaptureModule } from '../nativeModules/ObjectCaptureModule'; 
+
+type ObjectCaptureModuleType = {
+  /** Devuelve 'file:///.../model-xxxx.usdz' cuando termina (.processingComplete) */
+  startObjectCapture(): Promise<string>;
+};
+
+// Tipado de NativeModules
+const { ObjectCaptureModule } = NativeModules as {
+  ObjectCaptureModule?: ObjectCaptureModuleType;
+};
 
 export default function Scan() {
   const router = useRouter();
@@ -21,22 +32,27 @@ export default function Scan() {
       duration: 800,
       useNativeDriver: true,
     }).start();
-  }, []);
+  }, [fadeAnim]);
 
   const handleScan = async () => {
     try {
-      if (Platform.OS === 'ios') {
-        // 🔁 Ejecuta la vista nativa de escaneo
-        await ObjectCaptureModule.startObjectCapture();
-
-        // 👉 NO HACEMOS PUSH DESDE ACÁ — lo hace Swift con el evento `goToResult`
-        console.log('📷 Escaneo iniciado desde React Native');
-      } else {
-        Alert.alert('Función no disponible', 'Solo funciona en iPhones con LiDAR');
+      if (Platform.OS !== 'ios') {
+        Alert.alert('Función no disponible', 'Solo funciona en iPhones con LiDAR.');
+        return;
       }
-    } catch (err) {
+      if (!ObjectCaptureModule?.startObjectCapture) {
+        Alert.alert('Módulo no disponible', 'ObjectCaptureModule no está enlazado.');
+        return;
+      }
+
+      // ✅ Espera la Promise que resuelve con la URI del .usdz
+      const uri = await ObjectCaptureModule.startObjectCapture(); // p.ej. 'file:///.../model.usdz'
+
+      // ✅ Navega a /result pasando el filePath
+      router.push({ pathname: '/result', params: { filePath: uri } });
+    } catch (err: any) {
       console.error('Error de captura:', err);
-      Alert.alert('Error', 'Ocurrió un problema al capturar el objeto.');
+      Alert.alert('Error', err?.message ?? 'Ocurrió un problema al capturar el objeto.');
     }
   };
 

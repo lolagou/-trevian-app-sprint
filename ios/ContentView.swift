@@ -15,7 +15,7 @@ struct ContentView: View {
     @State private var quickLookIsPresented = false
 
     @State private var passCount: Int = 0
-    private let maxPasses = 2
+    private let maxPasses = 1
 
     var modelPath: URL? {
         return modelFolderPath?.appending(path: "model.usdz")
