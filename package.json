@@ -30,7 +30,8 @@
     "react-native-safe-area-context": "5.4.0",
     "react-native-url-polyfill": "^2.0.0",
     "three": "^0.145.0",
-    "three-stdlib": "^2.36.0"
+    "three-stdlib": "^2.36.0",
+    "expo-secure-store": "~14.2.4"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
