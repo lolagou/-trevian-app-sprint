@@ -7,8 +7,8 @@ import { decode } from "base64-arraybuffer";
 import { createClient } from "@supabase/supabase-js";
 
 // ⚠️ PONÉ TUS CREDENCIALES
-const supabaseUrl = "https://TU_PROYECTO.supabase.co";
-const supabaseAnonKey = "TU_ANON_KEY";
+const supabaseUrl = " https://peutxcbxleqabbtujbzf.supabase.co";
+const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBldXR4Y2J4bGVxYWJidHVqYnpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkzNDExNDQsImV4cCI6MjA2NDkxNzE0NH0.-qTmXGLFk9hbbDA9yA0gE2Sh9JLKll4g-Ejp8K3KMsY";
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export default function UploadUSDZ() {
