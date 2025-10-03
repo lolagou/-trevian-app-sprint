@@ -19,6 +19,9 @@ import { LinearGradient } from 'expo-linear-gradient';
 import CTAButton from '../components/CTAButton';
 import IconButton from '../components/IconButton';
 import { Ionicons } from '@expo/vector-icons';
+import { useFonts } from 'expo-font';
+import AppLoading from 'expo-app-loading';
+
 
 export default function Register() {
   const [name, setName] = useState('');
@@ -30,6 +33,14 @@ export default function Register() {
 
   const router = useRouter();
   const fadeAnim = useRef(new Animated.Value(0)).current;
+
+  const [fontsLoaded] = useFonts({
+    'Onest-Medium': require('../assets/fonts/Onest-Medium.ttf'),
+  });
+
+  if (!fontsLoaded) {
+    return <AppLoading />;
+  }
 
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -241,12 +252,14 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 8,
     color: '#fff',
+    fontFamily: 'Onest-Medium', 
   },
   registerText: {
     marginTop: 16,
     textAlign: 'center',
     color: '#CBFFEF',
     fontSize: 13,
+    fontFamily: 'Onest-Medium', 
   },
   link: {
     color: '#6DFFD5',

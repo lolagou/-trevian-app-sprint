@@ -3,15 +3,25 @@ import { View, Text, Image, StyleSheet, Dimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import CustomButton from '../components/CustomButton';
 import CTAsecundario from '../components/CTAsecundario';
+import { useFonts } from 'expo-font';
+import AppLoading from 'expo-app-loading';
 
 const { width, height } = Dimensions.get('window');
 
 export default function MustLogin() {
   const router = useRouter();
 
+  // ✅ Cargar la fuente
+  const [fontsLoaded] = useFonts({
+    'Onest-Medium': require('../assets/fonts/Onest-Medium.ttf'),
+  });
+
+  if (!fontsLoaded) {
+    return <AppLoading />;
+  }
+
   return (
     <View style={styles.container}>
-
       <Image
         source={require('../assets/mustlogin.png')}
         style={styles.expandedBackground}
@@ -25,7 +35,7 @@ export default function MustLogin() {
           resizeMode="contain"
         />
 
-        <Text style={styles.description}>
+        <Text style={[styles.description, { fontFamily: 'Onest-Medium' }]}>
           Para crear tu plantilla tendrás que{'\n'}iniciar sesión o registrarte
         </Text>
 
@@ -53,9 +63,9 @@ const styles = StyleSheet.create({
   },
   expandedBackground: {
     position: 'absolute',
-    width: 600, // 👉 ajustá esto como quieras (más de lo necesario)
+    width: 600,
     height: 1000,
-    top: -100,  // 👉 mové para centrar
+    top: -100,
     left: -100,
   },
   overlay: {

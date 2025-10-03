@@ -1,0 +1,41 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "assets/fonts/Onest-Black.ttf",
+      "sha1": "0940c1e719cffcc0ffb4f0c7a91cb657fea44288"
+    },
+    {
+      "path": "assets/fonts/Onest-Bold.ttf",
+      "sha1": "86ceb4cc25ff1b2cd988821007df790d7f611225"
+    },
+    {
+      "path": "assets/fonts/Onest-ExtraBold.ttf",
+      "sha1": "74779e3b35d677c21440ae3658efbca4bcb571f6"
+    },
+    {
+      "path": "assets/fonts/Onest-ExtraLight.ttf",
+      "sha1": "20d503c30f37c74223fe2ef0f04f7a217c349186"
+    },
+    {
+      "path": "assets/fonts/Onest-Light.ttf",
+      "sha1": "901975faac62c98c1e5b7f88578e20eb74a358c7"
+    },
+    {
+      "path": "assets/fonts/Onest-Medium.ttf",
+      "sha1": "98a4f77b814f8db264f133e7fc2017a50f0244fe"
+    },
+    {
+      "path": "assets/fonts/Onest-Regular.ttf",
+      "sha1": "d7c2a9d55e1e32428505d8d94d3027bd5d121cb7"
+    },
+    {
+      "path": "assets/fonts/Onest-SemiBold.ttf",
+      "sha1": "e37d9d95ce73c21bd85946417f3192d77d282307"
+    },
+    {
+      "path": "assets/fonts/Onest-Thin.ttf",
+      "sha1": "223fb872700f79892a04d07ba14c4bcfa6d68006"
+    }
+  ]
+}

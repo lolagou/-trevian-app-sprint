@@ -8,11 +8,22 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { Asset } from 'expo-asset';
 import { Renderer } from 'expo-three';
+import { useFonts } from 'expo-font';
+import AppLoading from 'expo-app-loading';
 
 const { width, height } = Dimensions.get('window');
 
 export default function Unlocked() {
   const router = useRouter();
+
+  // ✅ Cargar la fuente
+  const [fontsLoaded] = useFonts({
+    'Onest-Medium': require('../assets/fonts/Onest-Medium.ttf'),
+  });
+
+  if (!fontsLoaded) {
+    return <AppLoading />;
+  }
 
   return (
     <View style={styles.container}>
@@ -119,6 +130,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 16,
     marginBottom: 40,
+    fontFamily: 'Onest-Medium',
   },
   expandedBackground: {
     position: 'absolute',

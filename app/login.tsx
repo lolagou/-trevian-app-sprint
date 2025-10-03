@@ -19,9 +19,13 @@ import { LinearGradient } from 'expo-linear-gradient';
 import CTAButton from '../components/CTAButton';
 import IconButton from '../components/IconButton';
 import { Ionicons } from '@expo/vector-icons';
+import { useFonts } from 'expo-font';
+import AppLoading from 'expo-app-loading';
 
 const API_BASE = 'https://trevian-server.vercel.app';
-const DEMO_MODE = false; // 🔁 ponelo en true si querés usar usuario/clave 1234
+const DEMO_MODE = true; // 🔁 ponelo en true si querés usar usuario/clave 1234
+
+
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -31,6 +35,14 @@ export default function Login() {
 
   const router = useRouter();
   const fadeAnim = useRef(new Animated.Value(0)).current;
+
+  const [fontsLoaded] = useFonts({
+    'Onest-Medium': require('../assets/fonts/Onest-Medium.ttf'),
+  });
+  
+  if (!fontsLoaded) {
+    return <AppLoading />;
+  }
 
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -247,13 +259,14 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 32,
     marginTop: 90,
+    
   },
   form: { alignItems: 'center', gap: 12 },
-  field: { width: 300, alignSelf: 'center', marginBottom: 5 },
-  label: { color: '#CBFFEF', fontSize: 14, fontWeight: 'bold', marginBottom: 4 },
-  input: { borderWidth: 2, borderColor: '#CBFFEF', borderRadius: 8, padding: 8, color: '#fff' },
-  registerText: { marginTop: 16, textAlign: 'center', color: '#CBFFEF', fontSize: 13 },
-  link: { color: '#6DFFD5', textDecorationLine: 'underline' },
+  field: { width: 300, alignSelf: 'center', marginBottom: 5 , fontFamily: 'Onest-Medium'},
+  label: { color: '#CBFFEF', fontSize: 14, fontWeight: 'bold', marginBottom: 4},
+  input: { borderWidth: 2, borderColor: '#CBFFEF', borderRadius: 8, padding: 8, color: '#fff', fontFamily: 'Onest-Medium' },
+  registerText: { marginTop: 16, textAlign: 'center', color: '#CBFFEF', fontSize: 13, fontFamily: 'Onest-Medium' },
+  link: { color: '#6DFFD5', textDecorationLine: 'underline',fontFamily: 'Onest-Medium', },
   logoContainer: { marginTop: 40, alignItems: 'center' },
   LineContainer: { alignItems: 'center' },
   logo: { width: 120, height: 40 },

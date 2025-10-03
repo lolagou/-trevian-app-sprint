@@ -3,11 +3,22 @@ import { View, Text, Image, StyleSheet, Dimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import CTAButton from '../components/CTAButton';
 import DashboardButton from '../components/DashboardButton';
+import { useFonts } from 'expo-font';
+import AppLoading from 'expo-app-loading';
 
 const { width, height } = Dimensions.get('window');
 
 export default function Unlocked() {
   const router = useRouter();
+
+    // ✅ Cargar la fuente
+    const [fontsLoaded] = useFonts({
+      'Onest-Medium': require('../assets/fonts/Onest-Medium.ttf'),
+    });
+  
+    if (!fontsLoaded) {
+      return <AppLoading />;
+    }
 
   return (
     <View style={styles.container}>
@@ -51,6 +62,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 16,
     marginBottom: 40,
+    fontFamily: 'Onest-Medium',
   },
 
   expandedBackground: {
