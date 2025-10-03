@@ -139,7 +139,7 @@ export default function IndexScreen() {
 
   return (
     <LinearGradient colors={[backgroundColor, backgroundColor]} style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
+      <SafeAreaView style={styles.safeArea} edges={[]}>
         <View style={styles.themeToggleContainer}>
           <Text style={{ color: lineColor, fontWeight: 'bold', marginRight: 10 }}>
             {isDarkMode ? 'Oscuro' : 'Claro'}
@@ -232,13 +232,15 @@ export default function IndexScreen() {
                       model.position.y = 0;
 
                       // Color inicial según tema actual
-                      model.traverse((child: any) => {
-                        if (child.isMesh) {
-                          const mat = child.material as THREE.MeshStandardMaterial;
-                          mat.color.set(isDarkMode ? '#000000' : '#6DFFD5');
-                          mat.needsUpdate = true;
-                        }
-                      });
+                      const ACCENT = '#6DFFD5'; // ponelo arriba del archivo si querés
+
+model.traverse((child: any) => {
+  if (child.isMesh) {
+    const mat = child.material as THREE.MeshStandardMaterial;
+    mat.color.set(ACCENT); // <- arranca celeste
+    mat.needsUpdate = true;
+  }
+});
 
                       scene.add(model);
 

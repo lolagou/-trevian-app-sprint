@@ -1,27 +1,60 @@
-
 import React from 'react';
-import { TouchableOpacity, Text, StyleSheet, ViewStyle, TextStyle } from 'react-native';
+import {
+  TouchableOpacity,
+  Text,
+  StyleSheet,
+  ViewStyle,
+  TextStyle,
+  StyleProp,
+} from 'react-native';
 
 type Props = {
-  text: string;
-  onPress: () => void;
+  /** Alias de texto principal */
+  label?: string;
+  /** Compat: sigue funcionando si ya usabas `text` */
+  text?: string;
+  /** Alternativa: <CustomButton>Texto</CustomButton> */
+  children?: React.ReactNode;
+
+  onPress: () => void | Promise<void>;
   variant?: 'solid' | 'outline';
-  style?: ViewStyle;
-  textStyle?: TextStyle;
+  style?: StyleProp<ViewStyle>;
+  textStyle?: StyleProp<TextStyle>;
+  disabled?: boolean;
 };
 
-export default function CustomButton({ text, onPress, variant = 'solid', style, textStyle }: Props) {
+export default function CustomButton({
+  label,
+  text,
+  children,
+  onPress,
+  variant = 'solid',
+  style,
+  textStyle,
+  disabled = false,
+}: Props) {
+  const content = label ?? text ?? children ?? null;
+
   return (
     <TouchableOpacity
       onPress={onPress}
+      disabled={disabled}
+      activeOpacity={0.8}
       style={[
         styles.base,
         variant === 'solid' ? styles.solid : styles.outline,
+        disabled && { opacity: 0.6 },
         style,
       ]}
     >
-      <Text style={[styles.text, variant === 'outline' && styles.outlineText, textStyle]}>
-        {text}
+      <Text
+        style={[
+          styles.text,
+          variant === 'outline' && styles.outlineText,
+          textStyle,
+        ]}
+      >
+        {content}
       </Text>
     </TouchableOpacity>
   );
@@ -37,9 +70,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 8,
   },
-  solid: {
-    backgroundColor: '#6DFFD5',
-  },
+  solid: { backgroundColor: '#6DFFD5' },
   outline: {
     borderWidth: 2,
     borderColor: '#6DFFD5',
@@ -50,7 +81,5 @@ const styles = StyleSheet.create({
     color: '#020019',
     fontSize: 16,
   },
-  outlineText: {
-    color: '#6DFFD5',
-  },
+  outlineText: { color: '#6DFFD5' },
 });

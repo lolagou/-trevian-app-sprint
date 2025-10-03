@@ -20,6 +20,9 @@ import CTAButton from '../components/CTAButton';
 import IconButton from '../components/IconButton';
 import { Ionicons } from '@expo/vector-icons';
 
+const API_BASE = 'https://trevian-server.vercel.app';
+const DEMO_MODE = false; // 🔁 ponelo en true si querés usar usuario/clave 1234
+
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -35,13 +38,25 @@ export default function Login() {
       duration: 800,
       useNativeDriver: true,
     }).start();
-  }, []);
+  }, [fadeAnim]);
 
   const isValidEmail = (v: string) => /\S+@\S+\.\S+/.test(v);
 
   const handleLogin = async () => {
-    if (loading) return; // evita doble tap
+    if (loading) return;
 
+    // —— DEMO (opcional, igual a tu versión que “funcionaba perfecto”) ——
+    if (DEMO_MODE) {
+      if (email === '1234' && password === '1234') {
+        await AsyncStorage.setItem('userID', '1234');
+        router.replace('/unlocked');
+      } else {
+        Alert.alert('Error de inicio de sesión', 'Mail o contraseña incorrectos');
+      }
+      return;
+    }
+
+    // —— MODO API real ——
     if (!email.trim() || !password) {
       Alert.alert('Faltan datos', 'Completá mail y contraseña.');
       return;
@@ -54,24 +69,64 @@ export default function Login() {
     try {
       setLoading(true);
 
-      const res = await fetch('https://trevian-server.vercel.app/auth/login', {
+      const res = await fetch(`${API_BASE}/auth/login`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify({ email, password }),
       });
 
-      const data = await res.json().catch(() => ({} as any));
+      const raw = await res.text(); // más robusto frente a respuestas vacías
+      let data: any = {};
+      try { data = raw ? JSON.parse(raw) : {}; } catch {}
+
       if (!res.ok) {
         const msg = data?.message || data?.error || `Error ${res.status}`;
         throw new Error(msg);
       }
 
-      await SecureStore.setItemAsync('auth_token', data.data.token);
-      await AsyncStorage.setItem('user', JSON.stringify(data.data.user));
+      // — extraer token/usuario de forma segura —
+      const token =
+        data?.data?.token ??
+        data?.token ??
+        data?.access_token ??
+        null;
 
-      Alert.alert('¡Bienvenida!', data.message || 'Inicio de sesión exitoso');
-      router.replace('/unlocked'); // tu ruta original
+      const user =
+        data?.data?.user ??
+        data?.user ??
+        null;
+
+      if (typeof token !== 'string' || token.length === 0) {
+        // Evita setItem con undefined → “illegal arguments”
+        console.log('LOGIN RAW:', raw);
+        console.log('LOGIN JSON parseado:', data);
+        throw new Error('La API no devolvió un token válido.');
+      }
+
+      // Guardar token: primero SecureStore (iOS/Android nativo),
+      // si falla por cualquier motivo → AsyncStorage
+      let saved = false;
+      try {
+        if (SecureStore?.setItemAsync) {
+          await SecureStore.setItemAsync('auth_token', String(token));
+          saved = true;
+        }
+      } catch (e) {
+        console.warn('SecureStore falló, uso AsyncStorage:', e);
+      }
+      if (!saved) {
+        await AsyncStorage.setItem('auth_token', String(token));
+      }
+
+      // Guardar user sólo si existe (evita JSON.stringify(undefined))
+      if (user != null) {
+        await AsyncStorage.setItem('user', JSON.stringify(user));
+      }
+
+      Alert.alert('¡Bienvenida!', data?.message || 'Inicio de sesión exitoso');
+      router.replace('/unlocked');
     } catch (e: any) {
+      console.error('LOGIN ERROR:', e);
       Alert.alert('No pudimos iniciar sesión', e?.message || 'Intentá de nuevo más tarde.');
     } finally {
       setLoading(false);
@@ -85,10 +140,7 @@ export default function Login() {
       end={{ x: 0.005, y: 1 }}
       style={styles.gradient}
     >
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        style={{ flex: 1 }}
-      >
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1 }}>
         <Animated.View style={{ opacity: fadeAnim }}>
           <Image
             source={require('../assets/Back.png')}
@@ -133,7 +185,6 @@ export default function Login() {
               </View>
             </View>
 
-            {/* Botón: sin prop 'disabled'; bloqueo con loading y bajo opacidad */}
             <View style={{ width: 300, opacity: loading ? 0.6 : 1 }}>
               <CTAButton
                 label={loading ? 'Ingresando...' : 'INICIAR SESIÓN'}
@@ -188,11 +239,7 @@ export default function Login() {
 }
 
 const styles = StyleSheet.create({
-  gradient: {
-    flex: 1,
-    padding: 24,
-    justifyContent: 'center',
-  },
+  gradient: { flex: 1, padding: 24, justifyContent: 'center' },
   header: {
     color: '#CBFFEF',
     fontSize: 24,
@@ -201,49 +248,15 @@ const styles = StyleSheet.create({
     marginBottom: 32,
     marginTop: 90,
   },
-  form: {
-    alignItems: 'center',
-    gap: 12,
-  },
-  field: {
-    width: 300,
-    alignSelf: 'center',
-    marginBottom: 5,
-  },
-  label: {
-    color: '#CBFFEF',
-    fontSize: 14,
-    fontWeight: 'bold',
-    marginBottom: 4,
-  },
-  input: {
-    borderWidth: 2,
-    borderColor: '#CBFFEF',
-    borderRadius: 8,
-    padding: 8,
-    color: '#fff',
-  },
-  registerText: {
-    marginTop: 16,
-    textAlign: 'center',
-    color: '#CBFFEF',
-    fontSize: 13,
-  },
-  link: {
-    color: '#6DFFD5',
-    textDecorationLine: 'underline',
-  },
-  logoContainer: {
-    marginTop: 40,
-    alignItems: 'center',
-  },
-  LineContainer: {
-    alignItems: 'center',
-  },
-  logo: {
-    width: 120,
-    height: 40,
-  },
+  form: { alignItems: 'center', gap: 12 },
+  field: { width: 300, alignSelf: 'center', marginBottom: 5 },
+  label: { color: '#CBFFEF', fontSize: 14, fontWeight: 'bold', marginBottom: 4 },
+  input: { borderWidth: 2, borderColor: '#CBFFEF', borderRadius: 8, padding: 8, color: '#fff' },
+  registerText: { marginTop: 16, textAlign: 'center', color: '#CBFFEF', fontSize: 13 },
+  link: { color: '#6DFFD5', textDecorationLine: 'underline' },
+  logoContainer: { marginTop: 40, alignItems: 'center' },
+  LineContainer: { alignItems: 'center' },
+  logo: { width: 120, height: 40 },
   passwordRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -253,10 +266,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingRight: 8,
   },
-  passwordInput: {
-    flex: 1,
-    padding: 8,
-    color: '#fff',
-  },
+  passwordInput: { flex: 1, padding: 8, color: '#fff' },
   eyeIcon: {},
 });

@@ -76,5 +76,9 @@
 	<string>La app requiere acceso al micrófono para capturar escaneos más precisos.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Guardaremos imágenes necesarias para generar el modelo 3D.</string>
+	<key>UIFileSharingEnabled</key>
+	<true/>
+	<key>LSSupportsOpeningDocumentsInPlace</key>
+	<true/>
 </dict>
 </plist>
