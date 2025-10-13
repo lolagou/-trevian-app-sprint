@@ -41,7 +41,7 @@ export default function Scan() {
 
   return (
     <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
-      {/* Botón reutilizable para volver */}
+      {/* Botón para volver al dashboard */}
       <DashboardButton onPress={() => router.push('/dashboard')} />
 
       {/* Barra de progreso visual */}
@@ -50,8 +50,17 @@ export default function Scan() {
       {/* Marco para captura */}
       <View style={styles.captureFrame} />
 
-      {/* Botón reutilizable */}
-      <CTAButton label="CONTINUAR" onPress={handleScan} />
+      {/* 🔹 Botón adicional para ir a Pago */}
+      <CTAButton
+        label="IR A PAGO"
+        onPress={() => router.push('/pago')}
+      />
+
+      {/* Botón original para continuar */}
+      <CTAButton
+        label="CONTINUAR"
+        onPress={handleScan}
+      />
     </Animated.View>
   );
 }
