@@ -1,13 +1,13 @@
 {
   "expo": {
     "name": "trevian-app-sprint",
-    "scheme": "trevian",
     "slug": "trevian-app-sprint",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
+    "scheme": "trevian", 
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
@@ -15,7 +15,10 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.lolagou"
+      "bundleIdentifier": "com.lolagou",
+      "associatedDomains": [
+        "applinks:trevianapp.com" 
+      ]
     },
     "android": {
       "adaptiveIcon": {
@@ -23,7 +26,22 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.lolagou"
+      "package": "com.lolagou",
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "data": [
+            {
+              "scheme": "https",
+              "host": "trevianapp.com"
+            },
+            {
+              "scheme": "trevian"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -31,7 +49,8 @@
     "plugins": [
       "expo-router",
       "expo-font",
-      "expo-secure-store"
+      "expo-secure-store",
+      "expo-web-browser"
     ],
     "extra": {
       "router": {},
