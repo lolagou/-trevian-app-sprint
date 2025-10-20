@@ -6,11 +6,14 @@ import {
   StyleSheet,
   Animated,
   Platform,
+  TouchableOpacity,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ObjectCaptureModule } from '../nativeModules/ObjectCaptureModule';
-import DashboardButton from '../components/DashboardButton';
 import CTAButton from '../components/CTAButton';
+
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+
 
 export default function Scan() {
   const router = useRouter();
@@ -41,8 +44,15 @@ export default function Scan() {
 
   return (
     <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
-      {/* Botón para volver al dashboard */}
-      <DashboardButton onPress={() => router.push('/dashboard')} />
+      {/* 🔹 Botón de ícono para volver al Dashboard */}
+      <TouchableOpacity
+        onPress={() => router.push('/dashboard')}
+        style={styles.dashboardButton}
+      >
+        <View style={styles.iconContainer}>
+        <FontAwesome6 name="user-large" size={20} color="#CBFFEF" />
+        </View>
+      </TouchableOpacity>
 
       {/* Barra de progreso visual */}
       <View style={styles.topBar} />
@@ -73,8 +83,28 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
+  dashboardButton: {
+    position: 'absolute',
+    top: 40,
+    left: 20,
+    zIndex: 10,
+    shadowOpacity: 0.9,
+    shadowOffset: { width: 0, height: 0 },
+    shadowRadius: 10,
+    elevation: 5,
+  },
+  iconContainer: {
+    width: 50,
+    height: 50,
+    borderRadius: 30,
+    borderWidth: 2,
+    borderColor: '#6DFFD5', 
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#020016',
+  },
   topBar: {
-    marginTop: 60,
+    marginTop: 100,
     width: '60%',
     height: 16,
     borderRadius: 8,
