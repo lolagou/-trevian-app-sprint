@@ -75,10 +75,14 @@ export default function Pago({ navigation, price = 89900 }: PagoProps) {
   };
 
   return (
+
     <View style={styles.flex1}>
       {/* Fondo azul + halo celeste */}
-      <LinearGradient colors={[NAVY, '#05003F']} start={{x:0,y:0}} end={{x:1,y:1}} style={StyleSheet.absoluteFill}/>
-      <LinearGradient colors={['rgba(109,255,213,0.00)','rgba(109,255,213,0.22)']} start={{x:0.25,y:0}} end={{x:1,y:0.2}} style={StyleSheet.absoluteFill}/>
+      <Image
+      source={require('../assets/fondo-pago.png')}
+      style={styles.expandedBackground}
+      resizeMode="cover"
+    />
 
       <SafeAreaView style={styles.flex1}>
         <ScrollView contentContainerStyle={styles.scrollPad}>
@@ -94,7 +98,7 @@ export default function Pago({ navigation, price = 89900 }: PagoProps) {
           {/* Card Métodos de pago (TRANSPARENTE) */}
           <GhostCard lineColor={LINE}>
             <Text style={styles.cardTitle}>MÉTODO DE PAGO</Text>
-            <Text style={styles.cardSub}>Seleccione un método de pago para realizar la compra:</Text>
+            <Text style={styles.cardSub}>Seleccione un método de pago para         realizar la compra:</Text>
 
             <View style={styles.methodsRow}>
               <BrandPill label="Mercado pago" logo={mpLogo} selected={method==='mp'} onPress={()=>setMethod('mp')} lineColor={LINE} />
@@ -168,22 +172,29 @@ function BrandPill({ label, logo, selected, onPress, lineColor }: BrandPillProps
 
 /* ---------- Styles (todas con Onest) ---------- */
 const styles = StyleSheet.create({
-  flex1: { flex: 1 },
+  flex1: { flex: 1, backgroundColor: '#020016' },
   scrollPad: { padding: 20, paddingBottom: 28 },
   header: { flexDirection: 'row', alignItems: 'center', marginBottom: 18, justifyContent: 'space-between' },
   backGlyph: { fontSize: 22, fontFamily: 'Onest-Medium' },
   title: { fontSize: 24, color: '#FFFFFF', fontFamily: 'Onest-ExtraBold', letterSpacing: 0.5 },
-  cardOuter: { marginBottom: 16, shadowOpacity: 0.25, shadowRadius: 12, shadowOffset: { width: 0, height: 0 } },
+  cardOuter: { marginBottom: 24, shadowRadius: 12, shadowOffset: { width: 0, height: 0 } },
   cardInner: {
-    borderRadius: 18, padding: 14, borderWidth: 1.5,
+    borderRadius: 12, padding: 16, borderWidth: 2,
     backgroundColor: 'rgba(2,0,26,0.28)',
-  },
-  cardTitle: { fontSize: 18, color: '#D2FFF2', fontFamily: 'Onest-ExtraBold', marginBottom: 6, letterSpacing: 0.4 },
-  cardSub: { fontSize: 14, color: '#D2FFF2CC', fontFamily: 'Onest-Medium', marginBottom: 10, lineHeight: 20 },
+  },//fijarme bien el padding de arriba y de los costados, esto genera que haya 16 en todos lados
+  cardTitle: { fontSize: 16, color: '#D2FFF2', fontFamily: 'Onest-ExtraBold', marginBottom: 6, letterSpacing: 0.4 },
+  cardSub: { fontSize: 14, color: '#A7A7A7', fontFamily: 'Onest-Medium', marginBottom: 8, lineHeight: 21 },
   methodsRow: { flexDirection: 'row', gap: 12, marginBottom: 10 },
   pill: {
     flexDirection: 'row', alignItems: 'center',
-    borderWidth: 1.5, borderRadius: 12, paddingVertical: 10, paddingHorizontal: 14,
+    borderWidth: 1, borderRadius: 4, paddingVertical: 10, paddingHorizontal: 14,
+  },
+  expandedBackground: {
+    position: 'absolute',
+    width: 600,
+    height: 1000,
+    top: -100,
+    left: -100,
   },
   brandIcon: { width: 24, height: 16, marginRight: 8 },
   pillText: { fontSize: 14, color: '#D2FFF2', fontFamily: 'Onest-Medium', letterSpacing: 0.3 },
