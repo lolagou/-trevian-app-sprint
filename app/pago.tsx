@@ -79,10 +79,11 @@ export default function Pago({ navigation, price = 89900 }: PagoProps) {
     <View style={styles.flex1}>
       {/* Fondo azul + halo celeste */}
       <Image
-      source={require('../assets/fondo-pago.png')}
-      style={styles.expandedBackground}
-      resizeMode="cover"
-    />
+  source={require('../assets/fondo-pago.png')}
+  style={styles.fullBackground}
+  resizeMode="cover"
+  blurRadius={0}
+/>
 
       <SafeAreaView style={styles.flex1}>
         <ScrollView contentContainerStyle={styles.scrollPad}>
@@ -189,13 +190,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row', alignItems: 'center',
     borderWidth: 1, borderRadius: 4, paddingVertical: 10, paddingHorizontal: 14,
   },
-  expandedBackground: {
+  fullBackground: {
+    ...StyleSheet.absoluteFillObject,  // ocupa toda la pantalla
+    width: '100%',
+    height: '100%',
     position: 'absolute',
-    width: 600,
-    height: 1000,
-    top: -100,
-    left: -100,
+    zIndex: -1,              // queda detrás de todo
+    opacity: 0.9,            // opcional: un leve velo si querés que se lea mejor el texto
   },
+
   brandIcon: { width: 24, height: 16, marginRight: 8 },
   pillText: { fontSize: 14, color: '#D2FFF2', fontFamily: 'Onest-Medium', letterSpacing: 0.3 },
   previewBox: { width: '100%', borderRadius: 14, overflow: 'hidden', borderWidth: 1, borderColor: '#929292', backgroundColor: '#929292' },
