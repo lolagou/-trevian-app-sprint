@@ -30,7 +30,7 @@ export default function MustLogin() {
 
       <View style={styles.overlay}>
         <Image
-          source={require('../assets/padlock.png')}
+          source={require('../assets/prohibido.png')}
           style={styles.lockImage}
           resizeMode="contain"
         />
@@ -83,6 +83,5 @@ const styles = StyleSheet.create({
     color: 'white',
     textAlign: 'center',
     fontSize: 16,
-    marginBottom: 40,
   },
 });
