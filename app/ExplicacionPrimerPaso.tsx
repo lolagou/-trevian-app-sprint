@@ -11,6 +11,8 @@ import { Renderer } from 'expo-three';
 import { useFonts } from 'expo-font';
 import AppLoading from 'expo-app-loading';
 
+
+
 const { width, height } = Dimensions.get('window');
 
 export default function Unlocked() {

@@ -18,8 +18,10 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Renderer } from 'expo-three';
 import 'react-native-url-polyfill/auto';
+import { useFonts } from 'expo-font';
 
 const { width } = Dimensions.get('window');
+
 
 export default function IndexScreen() {
   const router = useRouter();
@@ -34,6 +36,10 @@ export default function IndexScreen() {
   const cubeTranslateX = useRef(new Animated.Value(0)).current;
   const cubeScale = useRef(new Animated.Value(1)).current;
   const cubeOpacity = useRef(new Animated.Value(1)).current;
+
+  const [fontsLoaded] = useFonts({
+    'Onest-Medium': require('../assets/fonts/Onest-Medium.ttf'),
+  });
 
   const [isDarkMode, setIsDarkMode] = useState(true);
 
@@ -119,7 +125,7 @@ export default function IndexScreen() {
 
   const backgroundColor = isDarkMode ? '#02001A' : '#CBFFEF';
   const lineColor = isDarkMode ? '#CBFFEF' : '#05003F';
-  const textColor = isDarkMode ? '#D2FFF2' : '#05003F';
+  const textColor = isDarkMode ? '#FFFFFF' : '#05003F';
   const buttonBackground = isDarkMode ? '#6DFFD5' : '#05003F';
   const buttonTextColor = isDarkMode ? '#05003F' : '#CBFFEF';
   const shadowSource = isDarkMode
@@ -260,16 +266,17 @@ model.traverse((child: any) => {
               />
               <Image source={shadowSource} style={styles.shadowImage} resizeMode="contain" />
               <Text
-                style={{
-                  color: textColor,
-                  fontSize: 18,
-                  textAlign: 'center',
-                  paddingHorizontal: -80,
-                  maxWidth: '100%',
-                }}
-              >
-                Explicación muy abarcativa
-              </Text>
+  style={{
+    color: textColor,
+    fontSize: 18,
+    textAlign: 'center',
+    width: 320, // o el ancho que te guste
+    alignSelf: 'center',
+    fontFamily: 'Onest-Medium',
+  }}
+>
+  Te explicamos paso por paso cómo crear tu plantilla ortopédica
+</Text>
             </Animated.View>
           </>
         )}

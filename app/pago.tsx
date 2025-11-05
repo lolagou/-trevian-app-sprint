@@ -1,4 +1,3 @@
-
 import React, { ReactNode } from 'react';
 import {
   View, Text, Pressable, StyleSheet, ActivityIndicator, Alert,
@@ -36,7 +35,7 @@ export default function Pago({ navigation, price = 89900 }: PagoProps) {
   const [method, setMethod] = React.useState<'mp' | 'visa' | 'mc'>('mp');
 
   const BACKEND_URL =
-    'https://backend-scanma.vercel.app/api/mercadopago/preference';
+    'https://trevian-server.vercel.app/mp/';
 
   const formatMoney = (n: number): string =>
     new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(n);
@@ -208,3 +207,5 @@ const styles = StyleSheet.create({
   priceValue: { fontSize: 24, fontFamily: 'Onest-ExtraBold', color: '#6DFFD5', letterSpacing: 0.32, marginTop: 4 },
   note: { textAlign: 'center', fontSize: 12, color: '#D2FFF299', fontFamily: 'Onest-Medium', marginTop: 12 },
 });
+
+
