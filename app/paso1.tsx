@@ -8,15 +8,14 @@ import {
   Platform,
   TouchableOpacity,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { ObjectCaptureModule } from '../nativeModules/ObjectCaptureModule';
 import CTAButton from '../components/CTAButton';
-
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
-
 
 export default function Scan() {
   const router = useRouter();
+  const { side = 'right' } = useLocalSearchParams<{ side?: 'right' | 'left' }>();
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -32,7 +31,11 @@ export default function Scan() {
       if (Platform.OS === 'ios') {
         const filePath = await ObjectCaptureModule.startObjectCapture();
         console.log('Archivo capturado en:', filePath);
-        router.push({ pathname: '/result', params: { filePath } });
+
+        router.push({
+          pathname: '/resulton',
+          params: { filePath, side },
+        });
       } else {
         Alert.alert('Función no disponible', 'Solo funciona en iPhones con LiDAR');
       }
@@ -44,31 +47,22 @@ export default function Scan() {
 
   return (
     <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
-      {/* 🔹 Botón de ícono para volver al Dashboard */}
       <TouchableOpacity
         onPress={() => router.push('/dashboard')}
         style={styles.dashboardButton}
       >
         <View style={styles.iconContainer}>
-        <FontAwesome6 name="user-large" size={20} color="#CBFFEF" />
+          <FontAwesome6 name="user-large" size={20} color="#CBFFEF" />
         </View>
       </TouchableOpacity>
 
-      {/* Barra de progreso visual */}
       <View style={styles.topBar} />
-
-      {/* Marco para captura */}
       <View style={styles.captureFrame} />
 
-      {/* 🔹 Botón adicional para ir a Pago */}
-      <CTAButton
-        label="IR A PAGO"
-        onPress={() => router.push('/pago')}
-      />
+      <CTAButton label="IR A PAGO" onPress={() => router.push('/pago')} />
 
-      {/* Botón original para continuar */}
       <CTAButton
-        label="CONTINUAR"
+        label={`CONTINUAR (${side === 'right' ? 'pie derecho' : 'pie izquierdo'})`}
         onPress={handleScan}
       />
     </Animated.View>
@@ -98,7 +92,7 @@ const styles = StyleSheet.create({
     height: 50,
     borderRadius: 30,
     borderWidth: 2,
-    borderColor: '#6DFFD5', 
+    borderColor: '#6DFFD5',
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#020016',

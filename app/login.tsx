@@ -23,7 +23,7 @@ import { useFonts } from 'expo-font';
 import AppLoading from 'expo-app-loading';
 
 const API_BASE = 'https://trevian-server.vercel.app';
-const DEMO_MODE = false; // 🔁 ponelo en true si querés usar usuario/clave 1234
+const DEMO_MODE = true; // 🔁 ponelo en true si querés usar usuario/clave 1234
 
 
 export default function Login() {
