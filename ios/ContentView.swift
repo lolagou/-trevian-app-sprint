@@ -1,7 +1,11 @@
 import SwiftUI
 import RealityKit
+import QuickLook   // si no lo tenés ya, por ARQuickLookView
 
 struct ContentView: View {
+    // 👇 Callback para avisar a React Native cuando el .usdz está listo
+    let onModelReady: (URL) -> Void
+
     // MARK: - Properties
     @State private var session: ObjectCaptureSession?
     @State private var rootImageFolder: URL?
@@ -42,7 +46,6 @@ struct ContentView: View {
             
             // Contenido principal
             VStack(spacing: 0) {
-                // Contenido principal según el estado
                 Group {
                     if session == nil && !isProgressing && !quickLookIsPresented {
                         InitialView(onStart: startNewScanWorkflow)
@@ -89,17 +92,14 @@ struct ContentView: View {
     func startNewScanWorkflow() {
         passCount = 0
         
-        // 1.1) Crear carpeta raíz Scans/<timestamp>/
         guard let baseScanDir = createTimestampedScanFolder() else {
             print("❌ No pude crear la carpeta raíz de escaneo.")
             return
         }
         
-        // 1.2) Definir carpeta de imágenes y de modelos
         rootImageFolder = baseScanDir.appendingPathComponent("Images/", isDirectory: true)
-        modelFolderPath   = baseScanDir.appendingPathComponent("Models/",  isDirectory: true)
+        modelFolderPath = baseScanDir.appendingPathComponent("Models/",  isDirectory: true)
         
-        // 1.3) Crear físicamente esas carpetas
         do {
             try FileManager.default.createDirectory(
                 at: rootImageFolder!,
@@ -114,7 +114,6 @@ struct ContentView: View {
             return
         }
         
-        // 1.4) Inicializar y arrancar la sesión de Object Capture
         session = ObjectCaptureSession()
         session?.start(imagesDirectory: rootImageFolder!)
     }
@@ -183,7 +182,6 @@ struct ContentView: View {
             return
         }
         
-        // 4.2) Mostrar overlay de progreso
         isProgressing = true
         
         do {
@@ -192,14 +190,17 @@ struct ContentView: View {
             config.sampleOrdering    = .sequential
             
             let session = try PhotogrammetrySession(
-                input: allImagesFolder,   // <-- Uso directo de Images/
+                input: allImagesFolder,
                 configuration: config
             )
             photogrammetrySession = session
+
+            // 👇 Definimos una sola vez la URL del modelo
+            let outputURL = modelDir.appendingPathComponent("model.usdz")
             
             let request = PhotogrammetrySession.Request
                 .modelFile(
-                    url: modelDir.appendingPathComponent("model.usdz"),
+                    url: outputURL,
                     detail: .reduced
                 )
             
@@ -219,9 +220,14 @@ struct ContentView: View {
                     return
                 case .processingComplete:
                     print("✅ Photogrammetry completada. Mostrando QuickLook.")
+                    
+                    // ✅ Avisar a React Native que el .usdz ya existe
+                    onModelReady(outputURL)
+
                     isProgressing = false
                     photogrammetrySession = nil
-                    quickLookIsPresented = true
+                    quickLookIsPresented = true   // si querés seguir mostrando QuickLook
+
                 default:
                     break
                 }
@@ -260,6 +266,4 @@ struct ContentView: View {
         modelFolderPath = nil
     }
 }
-
-
 

@@ -32,16 +32,15 @@ class ObjectCaptureModule: NSObject {
       }
 
       // Construimos la vista pasando el callback onModelReady
-      let view = ContentView(onModelReady: { [weak self] url in
-        let uri = "file://\(url.path)"
-        print("🔗 Enviando a RN la ruta del USDZ:", uri)
+      let view = ContentView(onModelReady: { [weak self] (url: URL) in
+          let uri = "file://\(url.path)"
+          print("🔗 Enviando a RN la ruta del USDZ:", uri)
 
-        // Devolver a RN
-        resolve(uri)
+          resolve(uri)
 
-        // (Opcional) cerrar la pantalla de escaneo automáticamente
-        self?.presentedVC?.dismiss(animated: true)
-        self?.presentedVC = nil
+          self?.presentedVC?.dismiss(animated: true)
+          self?.presentedVC = nil
+
       })
 
       let host = UIHostingController(rootView: view)

@@ -37,6 +37,8 @@
 	<string>12.0</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>LSSupportsOpeningDocumentsInPlace</key>
+	<true/>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
@@ -44,6 +46,28 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>Necesitamos acceder a la cámara para escanear el objeto 3D.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>La app requiere acceso al micrófono para capturar escaneos más precisos.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Guardaremos imágenes necesarias para generar el modelo 3D.</string>
+	<key>RCTNewArchEnabled</key>
+	<true/>
+	<key>UIAppFonts</key>
+	<array>
+		<string>Onest-Black.ttf</string>
+		<string>Onest-Bold.ttf</string>
+		<string>Onest-ExtraBold.ttf</string>
+		<string>Onest-ExtraLight.ttf</string>
+		<string>Onest-Light.ttf</string>
+		<string>Onest-Medium.ttf</string>
+		<string>Onest-Regular.ttf</string>
+		<string>Onest-SemiBold.ttf</string>
+		<string>Onest-Thin.ttf</string>
+	</array>
+	<key>UIFileSharingEnabled</key>
+	<true/>
 	<key>UILaunchStoryboardName</key>
 	<string>SplashScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>
@@ -53,7 +77,7 @@
 	<key>UIRequiresFullScreen</key>
 	<false/>
 	<key>UIStatusBarStyle</key>
-	<string/>
+	<string></string>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
@@ -70,27 +94,5 @@
 	<string>Light</string>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>NSCameraUsageDescription</key>
-	<string>Necesitamos acceder a la cámara para escanear el objeto 3D.</string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>La app requiere acceso al micrófono para capturar escaneos más precisos.</string>
-	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>Guardaremos imágenes necesarias para generar el modelo 3D.</string>
-	<key>UIFileSharingEnabled</key>
-	<true/>
-	<key>LSSupportsOpeningDocumentsInPlace</key>
-	<true/>
-	<key>UIAppFonts</key>
-	<array>
-		<string>Onest-Black.ttf</string>
-		<string>Onest-Bold.ttf</string>
-		<string>Onest-ExtraBold.ttf</string>
-		<string>Onest-ExtraLight.ttf</string>
-		<string>Onest-Light.ttf</string>
-		<string>Onest-Medium.ttf</string>
-		<string>Onest-Regular.ttf</string>
-		<string>Onest-SemiBold.ttf</string>
-		<string>Onest-Thin.ttf</string>
-	</array>
 </dict>
 </plist>
