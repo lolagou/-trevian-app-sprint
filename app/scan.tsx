@@ -53,10 +53,10 @@ export default function Scan() {
       // 3) Navegar según el pie
       if (side === 'right') {
         // ya subimos pie derecho → ir a pantalla de "escaneá el izquierdo"
-        router.push('/EscaneoPieIzquierdoIntro');
+        router.push('/pieizquierdo');
       } else {
         // ya subimos pie izquierdo → ir a pantalla loader "analizando"
-        router.push('/AnalizandoModelo');
+        router.push('/finaloader');
       }
     } catch (err: any) {
       console.error('Error en escaneo/subida:', err);

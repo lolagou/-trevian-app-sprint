@@ -1,10 +1,10 @@
-// app/resultona.tsx
+
 import React, { useEffect, useState } from 'react';
 import { View, Text, ActivityIndicator, StyleSheet, Alert } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { uploadFootModel } from '../lib/uploadFootModel';
 
-export default function Resultona() {
+export default function Result() {
   const router = useRouter();
   const { filePath, side = 'right' } = useLocalSearchParams<{
     filePath?: string;

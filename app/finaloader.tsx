@@ -1,4 +1,3 @@
-// app/AnalizandoModelo.tsx
 import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
@@ -6,8 +5,10 @@ import {
   StyleSheet,
   Animated,
   Image,
+  TouchableOpacity,
   Dimensions,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 
 const { width, height } = Dimensions.get('window');
@@ -15,26 +16,17 @@ const { width, height } = Dimensions.get('window');
 export default function AnalizandoModelo() {
   const router = useRouter();
   const progress = useRef(new Animated.Value(0)).current;
-  const [percent, setPercent] = useState(0);
+  const [finished, setFinished] = useState(false);
 
   useEffect(() => {
-    // escuchar cambios de Animated.Value para actualizar el % en texto
-    const id = progress.addListener(({ value }) => {
-      setPercent(Math.round(value * 100));
-    });
-
-    // animamos la barra de 0 a 1 en 4 segundos
     Animated.timing(progress, {
       toValue: 1,
-      duration: 4000,
-      useNativeDriver: false, // animamos width
+      duration: 4000, // duración total de la animación
+      useNativeDriver: false,
     }).start(() => {
-      router.push('/resultadoFinal');
+      // Cuando termina, mostrar botón
+      setFinished(true);
     });
-
-    return () => {
-      progress.removeListener(id);
-    };
   }, []);
 
   const widthInterpolated = progress.interpolate({
@@ -43,71 +35,91 @@ export default function AnalizandoModelo() {
   });
 
   return (
-    <View style={styles.container}>
-      {/* 🔵 Fondo con imagen mustlogin.png */}
+    <LinearGradient colors={['#02001A', '#02001A']} style={styles.container}>
+      {/* 🔹 Fondo visual difuso como mustlogin */}
       <Image
         source={require('../assets/mustlogin.png')}
         style={styles.background}
         resizeMode="cover"
       />
 
-      {/* Título arriba */}
-      <View style={styles.header}>
-        <Text style={styles.title}>PROCESANDO MODELO</Text>
-      </View>
+      {/* 🔹 Título */}
+      <Text style={styles.title}>PROCESANDO MODELO</Text>
 
-      {/* Tarjeta + "sombra" */}
+      {/* 🔹 Tarjeta animada */}
       <View style={styles.center}>
-        <View style={styles.card} />
-
+        <Animated.View
+          style={[
+            styles.card,
+            {
+              transform: [
+                { rotate: progress.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: ['-15deg', '15deg'],
+                  })
+                },
+              ],
+            },
+          ]}
+        />
         <View style={styles.shadow} />
       </View>
 
-      {/* Texto explicativo */}
-      <View style={styles.bottomTextBox}>
-        <Text style={styles.bottomText}>
-          Nuestra inteligencia artificial ya está
-        </Text>
-        <Text style={styles.bottomText}>
-          procesando el modelo
-        </Text>
-      </View>
-
-      {/* Barra de progreso abajo */}
-      <View style={styles.progressWrapper}>
-        <View style={styles.barBackground}>
-          <Animated.View style={[styles.barFill, { width: widthInterpolated }]} />
+      {/* 🔹 Texto inferior */}
+      {!finished ? (
+        <View style={styles.bottomTextBox}>
+          <Text style={styles.bottomText}>
+            Nuestra inteligencia artificial ya está
+          </Text>
+          <Text style={styles.bottomText}>procesando el modelo</Text>
         </View>
+      ) : (
+        <View style={styles.bottomTextBox}>
+          <Text style={styles.bottomText}>¡Procesamiento finalizado!</Text>
+        </View>
+      )}
 
-        {/* barrita blanca fina abajo como en el diseño */}
-        <View style={styles.smallBar} />
+      {/* 🔹 Barra de progreso */}
+      {!finished && (
+        <View style={styles.progressWrapper}>
+          <View style={styles.barBackground}>
+            <Animated.View style={[styles.barFill, { width: widthInterpolated }]} />
+          </View>
+          <View style={styles.smallBar} />
+        </View>
+      )}
 
-        {/* si querés mostrar el porcentaje */}
-        {/* <Text style={styles.percent}>{percent}%</Text> */}
-      </View>
-    </View>
+      {/* 🔹 Botón CONTINUAR */}
+      {finished && (
+        <TouchableOpacity
+          style={styles.continueButton}
+          onPress={() => router.push('/pago')}
+          activeOpacity={0.9}
+        >
+          <Text style={styles.continueText}>CONTINUAR</Text>
+        </TouchableOpacity>
+      )}
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#020016',
+    backgroundColor: '#02001A',
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'hidden',
   },
   background: {
     ...StyleSheet.absoluteFillObject,
     width,
     height,
-  },
-  header: {
-    position: 'absolute',
-    top: 80,
-    width: '100%',
-    alignItems: 'center',
+    opacity: 0.9,
   },
   title: {
+    position: 'absolute',
+    top: 90,
     color: '#FFFFFF',
     fontSize: 18,
     fontWeight: '700',
@@ -121,16 +133,15 @@ const styles = StyleSheet.create({
   card: {
     width: 160,
     height: 220,
-    backgroundColor: '#CFFFF3',
+    backgroundColor: '#6DFFD5',
     borderRadius: 24,
-    transform: [{ rotate: '-18deg' }],
   },
   shadow: {
     width: 200,
     height: 40,
     borderRadius: 40,
     backgroundColor: 'rgba(0,0,0,0.35)',
-    marginTop: 16,
+    marginTop: 20,
     opacity: 0.7,
   },
   bottomTextBox: {
@@ -168,9 +179,21 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     backgroundColor: '#FFFFFF',
   },
-  percent: {
-    marginTop: 4,
-    color: '#D2FFF2',
-    fontSize: 12,
+  continueButton: {
+    position: 'absolute',
+    bottom: 60,
+    backgroundColor: '#6DFFD5',
+    paddingVertical: 12,
+    paddingHorizontal: 60,
+    borderRadius: 12,
+    shadowColor: '#6DFFD5',
+    shadowOpacity: 0.5,
+    shadowRadius: 10,
+    elevation: 5,
+  },
+  continueText: {
+    color: '#05003F',
+    fontWeight: '700',
+    fontSize: 16,
   },
 });

@@ -33,7 +33,7 @@ export default function Scan() {
         console.log('Archivo capturado en:', filePath);
 
         router.push({
-          pathname: '/resulton',
+          pathname: '/result',
           params: { filePath, side },
         });
       } else {
