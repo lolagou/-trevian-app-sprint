@@ -21,6 +21,10 @@
 		3AE5A2592E1D49CE00589C5C /* model.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 3AE5A2582E1D49CE00589C5C /* model.usdz */; };
 		3AE5A2632E3E743800589C5C /*  ARQuickLookView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AE5A2622E3E743500589C5C /*  ARQuickLookView.swift */; };
 		3AE5A2682E3E7DE700589C5C /* ObjectCaptureModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AE5A2672E3E7DDE00589C5C /* ObjectCaptureModule.swift */; };
+		3AE5A2762EC203E300589C5C /* CaptureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AE5A2752EC203DD00589C5C /* CaptureView.swift */; };
+		3AE5A2782EC204A000589C5C /* InitialView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AE5A2772EC2049400589C5C /* InitialView.swift */; };
+		3AE5A27A2EC204C100589C5C /* ProgressOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AE5A2792EC204BA00589C5C /* ProgressOverlay.swift */; };
+		3AE5A27C2EC204E500589C5C /* InstructionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AE5A27B2EC204DB00589C5C /* InstructionsView.swift */; };
 		3B2FE5DCBAD847AD9B9812CD /* Onest-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0956BCBE23754B94AD23BCC2 /* Onest-Regular.ttf */; };
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
 		42D9BD69597A44FE9015F7FF /* Onest-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0585539D750849B69DBC805E /* Onest-ExtraBold.ttf */; };
@@ -37,14 +41,14 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		038A625CBE3D4400817CC6A9 /* Onest-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Onest-Light.ttf"; path = "../assets/fonts/Onest-Light.ttf"; sourceTree = "<group>"; };
-		0585539D750849B69DBC805E /* Onest-ExtraBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Onest-ExtraBold.ttf"; path = "../assets/fonts/Onest-ExtraBold.ttf"; sourceTree = "<group>"; };
-		0956BCBE23754B94AD23BCC2 /* Onest-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Onest-Regular.ttf"; path = "../assets/fonts/Onest-Regular.ttf"; sourceTree = "<group>"; };
+		038A625CBE3D4400817CC6A9 /* Onest-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Onest-Light.ttf"; path = "../assets/fonts/Onest-Light.ttf"; sourceTree = "<group>"; };
+		0585539D750849B69DBC805E /* Onest-ExtraBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Onest-ExtraBold.ttf"; path = "../assets/fonts/Onest-ExtraBold.ttf"; sourceTree = "<group>"; };
+		0956BCBE23754B94AD23BCC2 /* Onest-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Onest-Regular.ttf"; path = "../assets/fonts/Onest-Regular.ttf"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* trevianappsprint.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = trevianappsprint.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = trevianappsprint/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = trevianappsprint/Info.plist; sourceTree = "<group>"; };
-		1B2E08EED79F42A4A3612F82 /* Onest-ExtraLight.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Onest-ExtraLight.ttf"; path = "../assets/fonts/Onest-ExtraLight.ttf"; sourceTree = "<group>"; };
-		2B739DFA299C4799A6D1F0CE /* Onest-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Onest-Bold.ttf"; path = "../assets/fonts/Onest-Bold.ttf"; sourceTree = "<group>"; };
+		1B2E08EED79F42A4A3612F82 /* Onest-ExtraLight.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Onest-ExtraLight.ttf"; path = "../assets/fonts/Onest-ExtraLight.ttf"; sourceTree = "<group>"; };
+		2B739DFA299C4799A6D1F0CE /* Onest-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Onest-Bold.ttf"; path = "../assets/fonts/Onest-Bold.ttf"; sourceTree = "<group>"; };
 		2CF8F8C1C5418ADD747CDBD9 /* Pods-trevianappsprint.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-trevianappsprint.debug.xcconfig"; path = "Target Support Files/Pods-trevianappsprint/Pods-trevianappsprint.debug.xcconfig"; sourceTree = "<group>"; };
 		3A5ED7132DF244540023651F /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		3A5ED7152DF244540023651F /* CreateButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateButton.swift; sourceTree = "<group>"; };
@@ -57,19 +61,23 @@
 		3AE5A2582E1D49CE00589C5C /* model.usdz */ = {isa = PBXFileReference; lastKnownFileType = file; path = model.usdz; sourceTree = "<group>"; };
 		3AE5A2622E3E743500589C5C /*  ARQuickLookView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = " ARQuickLookView.swift"; sourceTree = "<group>"; };
 		3AE5A2672E3E7DDE00589C5C /* ObjectCaptureModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectCaptureModule.swift; sourceTree = "<group>"; };
+		3AE5A2752EC203DD00589C5C /* CaptureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureView.swift; sourceTree = "<group>"; };
+		3AE5A2772EC2049400589C5C /* InitialView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InitialView.swift; sourceTree = "<group>"; };
+		3AE5A2792EC204BA00589C5C /* ProgressOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressOverlay.swift; sourceTree = "<group>"; };
+		3AE5A27B2EC204DB00589C5C /* InstructionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstructionsView.swift; sourceTree = "<group>"; };
 		6131E5FC7C2D3DB4C36CA01F /* Pods-trevianappsprint.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-trevianappsprint.release.xcconfig"; path = "Target Support Files/Pods-trevianappsprint/Pods-trevianappsprint.release.xcconfig"; sourceTree = "<group>"; };
-		62841D112A184AE7BD53F68A /* Onest-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Onest-Medium.ttf"; path = "../assets/fonts/Onest-Medium.ttf"; sourceTree = "<group>"; };
+		62841D112A184AE7BD53F68A /* Onest-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Onest-Medium.ttf"; path = "../assets/fonts/Onest-Medium.ttf"; sourceTree = "<group>"; };
 		6D079369962246784FED20D0 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = trevianappsprint/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		890A4BA0615F573A0B522762 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-trevianappsprint/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = trevianappsprint/SplashScreen.storyboard; sourceTree = "<group>"; };
-		B46811C3F2324071BF688342 /* Onest-Black.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Onest-Black.ttf"; path = "../assets/fonts/Onest-Black.ttf"; sourceTree = "<group>"; };
+		B46811C3F2324071BF688342 /* Onest-Black.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Onest-Black.ttf"; path = "../assets/fonts/Onest-Black.ttf"; sourceTree = "<group>"; };
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
-		CB8E9AB32E2E48ABB294E527 /* Onest-Thin.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Onest-Thin.ttf"; path = "../assets/fonts/Onest-Thin.ttf"; sourceTree = "<group>"; };
+		CB8E9AB32E2E48ABB294E527 /* Onest-Thin.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Onest-Thin.ttf"; path = "../assets/fonts/Onest-Thin.ttf"; sourceTree = "<group>"; };
 		E9EF2D1F4C234226CA390AD7 /* libPods-trevianappsprint.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-trevianappsprint.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F11748412D0307B40044C1D9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = trevianappsprint/AppDelegate.swift; sourceTree = "<group>"; };
 		F11748442D0722820044C1D9 /* trevianappsprint-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "trevianappsprint-Bridging-Header.h"; path = "trevianappsprint/trevianappsprint-Bridging-Header.h"; sourceTree = "<group>"; };
-		F81348ECE2054098874EF3F1 /* Onest-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Onest-SemiBold.ttf"; path = "../assets/fonts/Onest-SemiBold.ttf"; sourceTree = "<group>"; };
+		F81348ECE2054098874EF3F1 /* Onest-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Onest-SemiBold.ttf"; path = "../assets/fonts/Onest-SemiBold.ttf"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -102,8 +110,12 @@
 				3AE5A2582E1D49CE00589C5C /* model.usdz */,
 				3A5ED7132DF244540023651F /* ContentView.swift */,
 				3A5ED7152DF244540023651F /* CreateButton.swift */,
+				3AE5A2752EC203DD00589C5C /* CaptureView.swift */,
 				3A5ED7162DF244540023651F /* CaptureState+.swift */,
+				3AE5A2772EC2049400589C5C /* InitialView.swift */,
 				3AE5A2622E3E743500589C5C /*  ARQuickLookView.swift */,
+				3AE5A2792EC204BA00589C5C /* ProgressOverlay.swift */,
+				3AE5A27B2EC204DB00589C5C /* InstructionsView.swift */,
 				3AE5A2672E3E7DDE00589C5C /* ObjectCaptureModule.swift */,
 				F11748412D0307B40044C1D9 /* AppDelegate.swift */,
 				F11748442D0722820044C1D9 /* trevianappsprint-Bridging-Header.h */,
@@ -184,7 +196,6 @@
 				CB8E9AB32E2E48ABB294E527 /* Onest-Thin.ttf */,
 			);
 			name = Resources;
-			path = "";
 			sourceTree = "<group>";
 		};
 		BB2F792B24A3F905000567C9 /* Supporting */ = {
@@ -442,7 +453,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				3AE5A2682E3E7DE700589C5C /* ObjectCaptureModule.swift in Sources */,
+				3AE5A27C2EC204E500589C5C /* InstructionsView.swift in Sources */,
 				3A5ED7192DF244540023651F /* CaptureState+.swift in Sources */,
+				3AE5A2762EC203E300589C5C /* CaptureView.swift in Sources */,
+				3AE5A27A2EC204C100589C5C /* ProgressOverlay.swift in Sources */,
+				3AE5A2782EC204A000589C5C /* InitialView.swift in Sources */,
 				3A5ED71A2DF244540023651F /* ContentView.swift in Sources */,
 				3AE5A2632E3E743800589C5C /*  ARQuickLookView.swift in Sources */,
 				3A5ED71B2DF244540023651F /* CreateButton.swift in Sources */,
@@ -582,10 +597,7 @@
 				LIBRARY_SEARCH_PATHS = "$(SDKROOT)/usr/lib/swift\"$(inherited)\"";
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
@@ -640,10 +652,7 @@
 				);
 				LIBRARY_SEARCH_PATHS = "$(SDKROOT)/usr/lib/swift\"$(inherited)\"";
 				MTL_ENABLE_DEBUG_INFO = NO;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;
