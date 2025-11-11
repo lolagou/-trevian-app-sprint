@@ -112,10 +112,11 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   background: {
-    ...StyleSheet.absoluteFillObject,
-    width,
-    height,
-    opacity: 0.9,
+    position: 'absolute',
+    width: 600,
+    height: 1000,
+    top: -100,
+    left: -100,
   },
   title: {
     position: 'absolute',
@@ -145,7 +146,7 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   bottomTextBox: {
-    marginBottom: 80,
+    marginBottom: 7,
     alignItems: 'center',
   },
   bottomText: {
@@ -186,9 +187,6 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 60,
     borderRadius: 12,
-    shadowColor: '#6DFFD5',
-    shadowOpacity: 0.5,
-    shadowRadius: 10,
     elevation: 5,
   },
   continueText: {

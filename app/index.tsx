@@ -129,8 +129,8 @@ export default function IndexScreen() {
   const buttonBackground = isDarkMode ? '#6DFFD5' : '#05003F';
   const buttonTextColor = isDarkMode ? '#05003F' : '#CBFFEF';
   const shadowSource = isDarkMode
-    ? require('../assets/shadow-dark.png')
-    : require('../assets/shadow-light.png');
+    ? require('../assets/shadow-light.png')
+    : require('../assets/shadow-dark.png');
 
   useEffect(() => {
     if (!cubeRef.current) return;

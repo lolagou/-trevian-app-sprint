@@ -59,7 +59,6 @@ export default function Scan() {
       <View style={styles.topBar} />
       <View style={styles.captureFrame} />
 
-      <CTAButton label="IR A PAGO" onPress={() => router.push('/pago')} />
 
       <CTAButton
         label={`CONTINUAR (${side === 'right' ? 'pie derecho' : 'pie izquierdo'})`}
