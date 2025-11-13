@@ -51,12 +51,14 @@ export default function Scan() {
         onPress={() => router.push('/dashboard')}
         style={styles.dashboardButton}
       >
-        <View style={styles.iconContainer}>
-          <FontAwesome6 name="user-large" size={20} color="#CBFFEF" />
-        </View>
+<View style={styles.iconContainer}>
+  <View style={styles.iconCircle}>
+    <FontAwesome6 name="user-large" size={15} color="#CBFFEF" />
+  </View>
+</View>
       </TouchableOpacity>
 
-      <View style={styles.topBar} />
+      <Text style={styles.title}>ESCANEANDO TU PIE</Text>
       <View style={styles.captureFrame} />
 
 
@@ -86,16 +88,6 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     elevation: 5,
   },
-  iconContainer: {
-    width: 50,
-    height: 50,
-    borderRadius: 30,
-    borderWidth: 2,
-    borderColor: '#6DFFD5',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#020016',
-  },
   topBar: {
     marginTop: 100,
     width: '60%',
@@ -109,6 +101,34 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: '#CBFFEF',
     borderRadius: 10,
-    marginVertical: 40,
+    marginVertical: 100,
+  },
+  iconContainer: {
+    position: "absolute",
+    top: 10,           // separarlo del borde superior
+    left: 294, 
+  },
+  iconCircle: {
+    width: 40,                 // tamaño del círculo
+    height: 40,
+    borderRadius: 60,           // círculo perfecto
+    borderWidth: 1,
+    borderColor: '#6DFFD5',     // borde verde como en la imagen
+    backgroundColor: 'rgba(109,255,213,0.12)', // relleno celestito suave
+    alignItems: 'center',
+    justifyContent: 'center',
+    // glow sutil
+    shadowColor: '#6DFFD5',
+    shadowOpacity: 0.35,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 0 },
+  },
+  title: {
+    position: 'absolute',
+    top: 90,
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: '700',
+    letterSpacing: 1,
   },
 });

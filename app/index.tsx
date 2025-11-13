@@ -1,3 +1,4 @@
+// IndexScreen.tsx
 import React, { useRef, useEffect, useState } from 'react';
 import {
   View,
@@ -6,7 +7,6 @@ import {
   Animated,
   TouchableOpacity,
   Image,
-  Switch,
   Dimensions,
 } from 'react-native';
 import { GLView } from 'expo-gl';
@@ -19,9 +19,15 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Renderer } from 'expo-three';
 import 'react-native-url-polyfill/auto';
 import { useFonts } from 'expo-font';
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6'; // 👈 agregado
 
 const { width } = Dimensions.get('window');
 
+const BACKGROUND = '#02001A';
+const TEXT_COLOR = '#FFFFFF';
+const BUTTON_BG = '#6DFFD5';
+const BUTTON_TEXT = '#05003F';
+const ACCENT = '#6DFFD5';
 
 export default function IndexScreen() {
   const router = useRouter();
@@ -40,11 +46,6 @@ export default function IndexScreen() {
   const [fontsLoaded] = useFonts({
     'Onest-Medium': require('../assets/fonts/Onest-Medium.ttf'),
   });
-
-  const [isDarkMode, setIsDarkMode] = useState(true);
-
-  // --- NUEVO: referencia al modelo para poder actualizar color al cambiar el tema ---
-  const cubeRef = useRef<THREE.Object3D | null>(null);
 
   useEffect(() => {
     Animated.timing(fadeAnim, { toValue: 1, duration: 1200, useNativeDriver: true }).start();
@@ -123,45 +124,28 @@ export default function IndexScreen() {
     }
   }, [showCube]);
 
-  const backgroundColor = isDarkMode ? '#02001A' : '#CBFFEF';
-  const lineColor = isDarkMode ? '#CBFFEF' : '#05003F';
-  const textColor = isDarkMode ? '#FFFFFF' : '#05003F';
-  const buttonBackground = isDarkMode ? '#6DFFD5' : '#05003F';
-  const buttonTextColor = isDarkMode ? '#05003F' : '#CBFFEF';
-  const shadowSource = isDarkMode
-    ? require('../assets/shadow-light.png')
-    : require('../assets/shadow-dark.png');
-
-  useEffect(() => {
-    if (!cubeRef.current) return;
-    cubeRef.current.traverse((child: any) => {
-      if (child.isMesh) {
-        const mat = child.material as THREE.MeshStandardMaterial;
-        mat.color.set(isDarkMode ? '#6DFFD5' : '#02001A'); 
-        mat.needsUpdate = true;
-      }
-    });
-  }, [isDarkMode]);
+  if (!fontsLoaded) return null;
 
   return (
-    <LinearGradient colors={[backgroundColor, backgroundColor]} style={styles.container}>
+    <LinearGradient colors={[BACKGROUND, BACKGROUND]} style={styles.container}>
       <SafeAreaView style={styles.safeArea} edges={[]}>
-        <View style={styles.themeToggleContainer}>
-          <Text style={{ color: lineColor, fontWeight: 'bold', marginRight: 10 }}>
-            {isDarkMode ? 'Oscuro' : 'Claro'}
-          </Text>
-          <Switch
-            value={isDarkMode}
-            onValueChange={() => setIsDarkMode((v) => !v)}
-            trackColor={{ false: '#CBFFEF', true: '#6DFFD5' }}
-            thumbColor={isDarkMode ? '#05003F' : '#6DFFD5'}
-          />
-        </View>
+        {/* 🔹 Botón Dashboard arriba a la izquierda */}
+        <TouchableOpacity
+          onPress={() => router.push('/dashboard')}
+          style={styles.dashboardButton}
+          activeOpacity={0.8}
+        >
+          <View style={styles.iconContainer}>
+            <View style={styles.iconCircle}>
+              <FontAwesome6 name="user-large" size={15} color="#CBFFEF" />
+            </View>
+          </View>
+        </TouchableOpacity>
 
         {showLogo && (
           <Animated.View style={[styles.logoContainer, { opacity: fadeAnim }]}>
             <Image
-              source={isDarkMode ? require('../assets/logo.png') : require('../assets/treviandark.png')}
+              source={require('../assets/logo.png')}
               style={styles.logo}
               resizeMode="contain"
             />
@@ -171,7 +155,7 @@ export default function IndexScreen() {
         {showGradient && (
           <Animated.View style={[styles.gradientContainer, { opacity: fadeAnim }]}>
             <Image
-              source={isDarkMode ? require('../assets/gradient.png') : require('../assets/gradient-light.png')}
+              source={require('../assets/gradient.png')}
               style={styles.gradient}
               resizeMode="contain"
             />
@@ -179,117 +163,123 @@ export default function IndexScreen() {
         )}
 
         {showCube && (
-          <>
-            <Animated.View
+          <Animated.View
+            style={{
+              transform: [
+                { translateY: cubeY },
+                { translateX: cubeTranslateX },
+                { scale: cubeScale },
+              ],
+              opacity: cubeOpacity,
+              position: 'absolute',
+              top: '34%',
+              width: '30%',
+              height: 150,
+              zIndex: 20,
+              alignItems: 'center',
+            }}
+          >
+            <GLView
+              style={{ width: '100%', height: '100%' }}
+              onContextCreate={async (gl: any) => {
+                const scene = new THREE.Scene();
+                const camera = new THREE.PerspectiveCamera(
+                  75,
+                  gl.drawingBufferWidth / gl.drawingBufferHeight,
+                  0.1,
+                  1000
+                );
+                camera.position.z = 1;
+
+                const renderer = new Renderer({ gl });
+                renderer.setSize(gl.drawingBufferWidth, gl.drawingBufferHeight);
+
+                const dpr =
+                  typeof window !== 'undefined' && (window as any).devicePixelRatio
+                    ? (window as any).devicePixelRatio
+                    : 1;
+                renderer.setPixelRatio(dpr);
+
+                scene.add(new THREE.AmbientLight(0xffffff, 1.2));
+                const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+                dirLight.position.set(5, 5, 5);
+                scene.add(dirLight);
+
+                const asset = Asset.fromModule(require('../assets/models/Cube.glb'));
+                await asset.downloadAsync();
+
+                const loader = new GLTFLoader();
+                loader.load(
+                  asset.localUri || asset.uri,
+                  (gltf: any) => {
+                    const model: THREE.Object3D = gltf.scene;
+
+                    model.scale.set(1, 1, 1);
+                    model.position.y = 0;
+
+                    model.traverse((child: any) => {
+                      if (child.isMesh) {
+                        const mat = child.material as THREE.MeshStandardMaterial;
+                        mat.color.set(ACCENT);
+                        mat.needsUpdate = true;
+                      }
+                    });
+
+                    scene.add(model);
+
+                    const animate = () => {
+                      requestAnimationFrame(animate);
+                      model.rotation.y += 0.01;
+                      model.rotation.x += 0.005;
+                      renderer.render(scene, camera);
+                      gl.endFrameEXP();
+                    };
+                    animate();
+                  },
+                  undefined,
+                  (error: any) => console.error('Error al cargar .glb:', error)
+                );
+              }}
+            />
+            <Image
+              source={require('../assets/shadow-light.png')}
+              style={styles.shadowImage}
+              resizeMode="contain"
+            />
+            <Text
               style={{
-                transform: [
-                  { translateY: cubeY },
-                  { translateX: cubeTranslateX },
-                  { scale: cubeScale },
-                ],
-                opacity: cubeOpacity,
-                position: 'absolute',
-                top: '34%',
-                width: '30%',
-                height: 150,
-                zIndex: 20,
-                alignItems: 'center',
+                color: TEXT_COLOR,
+                fontSize: 18,
+                textAlign: 'center',
+                width: 320,
+                alignSelf: 'center',
+                fontFamily: 'Onest-Medium',
               }}
             >
-              <GLView
-                style={{ width: '100%', height: '100%' }}
-                onContextCreate={async (gl: any) => {
-                  // Escena, cámara y renderer
-                  const scene = new THREE.Scene();
-                  const camera = new THREE.PerspectiveCamera(
-                    75,
-                    gl.drawingBufferWidth / gl.drawingBufferHeight,
-                    0.1,
-                    1000
-                  );
-                  camera.position.z = 1;
-
-                  const renderer = new Renderer({ gl });
-                  renderer.setSize(gl.drawingBufferWidth, gl.drawingBufferHeight);
-                  
-                  const dpr = (typeof window !== 'undefined' && (window as any).devicePixelRatio) ? (window as any).devicePixelRatio : 1;
-                  renderer.setPixelRatio(dpr);
-
-                 
-                  scene.add(new THREE.AmbientLight(0xffffff, 1.2));
-                  const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
-                  dirLight.position.set(5, 5, 5);
-                  scene.add(dirLight);
-
-                  
-                  const asset = Asset.fromModule(require('../assets/models/Cube.glb'));
-                  await asset.downloadAsync();
-
-                  const loader = new GLTFLoader();
-                  loader.load(
-                    asset.localUri || asset.uri,
-                    (gltf: any) => {
-                      const model: THREE.Object3D = gltf.scene;
-
-                      // Guardamos referencia global para poder actualizar color en vivo
-                      cubeRef.current = model;
-
-                      model.scale.set(1, 1, 1);
-                      model.position.y = 0;
-
-                      // Color inicial según tema actual
-                      const ACCENT = '#6DFFD5'; // ponelo arriba del archivo si querés
-
-model.traverse((child: any) => {
-  if (child.isMesh) {
-    const mat = child.material as THREE.MeshStandardMaterial;
-    mat.color.set(ACCENT); // <- arranca celeste
-    mat.needsUpdate = true;
-  }
-});
-
-                      scene.add(model);
-
-                      const animate = () => {
-                        requestAnimationFrame(animate);
-                        model.rotation.y += 0.01;
-                        model.rotation.x += 0.005;
-                        renderer.render(scene, camera);
-                        gl.endFrameEXP();
-                      };
-                      animate();
-                    },
-                    undefined,
-                    (error: any) => console.error('Error al cargar .glb:', error)
-                  );
-                }}
-              />
-              <Image source={shadowSource} style={styles.shadowImage} resizeMode="contain" />
-              <Text
-  style={{
-    color: textColor,
-    fontSize: 18,
-    textAlign: 'center',
-    width: 320, // o el ancho que te guste
-    alignSelf: 'center',
-    fontFamily: 'Onest-Medium',
-  }}
->
-  Te explicamos paso por paso cómo crear tu plantilla ortopédica
-</Text>
-            </Animated.View>
-          </>
+              Te explicamos paso por paso cómo crear tu plantilla ortopédica
+            </Text>
+          </Animated.View>
         )}
 
         {showUI && (
           <Animated.View
-            style={{ transform: [{ translateY: uiY }], alignItems: 'center', zIndex: 30, marginTop: 350 }}
+            style={{
+              transform: [{ translateY: uiY }],
+              alignItems: 'center',
+              zIndex: 30,
+              marginTop: 350,
+            }}
           >
             <TouchableOpacity
-              style={[styles.button, { backgroundColor: buttonBackground, shadowColor: buttonBackground }]}
+              style={[
+                styles.button,
+                { backgroundColor: BUTTON_BG, shadowColor: BUTTON_BG },
+              ]}
               onPress={() => router.push('/mustlogin')}
             >
-              <Text style={[styles.buttonText, { color: buttonTextColor }]}>CREÁ TU PLANTILLA</Text>
+              <Text style={[styles.buttonText, { color: BUTTON_TEXT }]}>
+                CREÁ TU PLANTILLA
+              </Text>
             </TouchableOpacity>
           </Animated.View>
         )}
@@ -301,14 +291,33 @@ model.traverse((child: any) => {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   safeArea: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  themeToggleContainer: {
+
+  // 🔹 DASHBOARD ICON
+  dashboardButton: {
     position: 'absolute',
     top: 40,
-    right: 20,
+    left: 20,
     zIndex: 10,
-    flexDirection: 'row',
-    alignItems: 'center',
   },
+  iconContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  iconCircle: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    borderWidth: 1.5,
+    borderColor: '#6DFFD5',
+    backgroundColor: 'rgba(109,255,213,0.12)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#6DFFD5',
+    shadowOpacity: 0.35,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 0 },
+  },
+
   logoContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   logo: { width: 120, height: 36 },
   gradientContainer: {
@@ -334,8 +343,11 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     opacity: 0.7,
   },
-  decorativeLines: { marginBottom: 40, alignItems: 'center', gap: 6 },
-  line: { width: 280, height: 6, borderRadius: 4 },
-  button: { paddingVertical: 11, paddingHorizontal: 64, borderRadius: 12, marginTop: 210 },
+  button: {
+    paddingVertical: 11,
+    paddingHorizontal: 64,
+    borderRadius: 12,
+    marginTop: 210,
+  },
   buttonText: { fontSize: 16, fontWeight: 'bold' },
 });

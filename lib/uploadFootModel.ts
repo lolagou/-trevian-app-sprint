@@ -1,44 +1,78 @@
-// lib/uploadFootModel.ts
+// lib/uploadFootModel.ts (NUEVO - sin Supabase)
 import RNFS from 'react-native-fs';
-import { createClient } from '@supabase/supabase-js';
-import { Buffer } from 'buffer';
+import { API_BASE } from './config';
 
-// polyfill Buffer en RN
-// @ts-ignore
-(global as any).Buffer = (global as any).Buffer || Buffer;
+type UploadResult = {
+  id: string;
+  webViewLink?: string;
+  webContentLink?: string;
+};
 
-const supabase = createClient(
-  'https://peutxcbxleqabbtujbzf.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBldXR4Y2J4bGVxYWJidHVqYnpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkzNDExNDQsImV4cCI6MjA2NDkxNzE0NH0.-qTmXGLFk9hbbDA9yA0gE2Sh9JLKll4g-Ejp8K3KMsY',
-  { auth: { persistSession: false } }
-);
+async function requestUploadUrl(
+  filename: string,
+  mime = 'model/vnd.usdz+zip',
+  jobId?: string // opcional, para agrupar derecho/izquierdo
+): Promise<string> {
+  const res = await fetch(`${API_BASE}/drive/init`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ filename, mime, jobId }),
+  });
+  const json = await res.json();
+  if (!res.ok || !json.uploadUrl) {
+    throw new Error(json?.error || 'No se pudo obtener uploadUrl');
+  }
+  return json.uploadUrl as string;
+}
 
-export async function uploadFootModel(
+async function putWholeFileToGoogle(
+  uploadUrl: string,
   filePath: string,
-  side: 'right' | 'left'
-): Promise<{ publicUrl: string; storagePath: string }> {
-  // filePath viene de ObjectCaptureModule (normalmente "file://...")
-  let readPath = filePath.replace('file://', '');
-  if (!readPath) throw new Error('Ruta de archivo vacía');
+  mime = 'model/vnd.usdz+zip'
+): Promise<UploadResult> {
+  // iOS/Android: aseguramos ruta sin "file://"
+  const local = filePath.startsWith('file://') ? filePath : `file://${filePath}`;
 
-  const base64 = await RNFS.readFile(readPath, 'base64');
-  const buf = Buffer.from(base64, 'base64');
-  const ab = buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);
-  const size = (ab as ArrayBuffer).byteLength;
-  if (!size) throw new Error('El archivo tiene 0 bytes');
+  // (Opcional) stat para Content-Length (algunos RN no lo requieren)
+  let contentLength: string | undefined;
+  try {
+    const stat = await RNFS.stat(local.replace('file://', ''));
+    contentLength = String(stat.size);
+  } catch {
+    // si falla, lo dejamos undefined
+  }
 
-  const destPath = `feet/${side}/${Date.now()}-scan.usdz`;
+  const headers: Record<string, string> = { 'Content-Type': mime };
+  if (contentLength) headers['Content-Length'] = contentLength;
 
-  const { error } = await supabase.storage.from('models').upload(destPath, ab, {
-    contentType: 'model/vnd.usdz+zip',
-    upsert: false,
-    // @ts-ignore
-    duplex: 'half',
+  const res = await fetch(`${uploadUrl}&fields=id,webViewLink,webContentLink`, {
+    method: 'PUT',
+    headers,
+    // @ts-ignore: RN acepta este objeto como body file
+    body: { uri: local, type: mime, name: 'scan.usdz' },
   });
 
-  if (error) throw error;
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok || !json.id) {
+    console.error('PUT Drive error:', json);
+    throw new Error(json?.error || 'Error subiendo a Drive');
+  }
+  return json as UploadResult;
+}
 
-  const { data: pub } = supabase.storage.from('models').getPublicUrl(destPath);
+/**
+ * Sube el modelo a Drive usando Service Account (vía backend liviano).
+ * Devuelve { id, webViewLink, webContentLink } del archivo en Drive.
+ */
+export async function uploadFootModelToDrive(
+  filePath: string,
+  side: 'right' | 'left',
+  opts: { jobId?: string } = {}
+): Promise<UploadResult> {
+  if (!filePath) throw new Error('Ruta de archivo vacía');
 
-  return { publicUrl: pub.publicUrl, storagePath: destPath };
+  const filename = `${Date.now()}-${side}-scan.usdz`;
+  const uploadUrl = await requestUploadUrl(filename, 'model/vnd.usdz+zip', opts.jobId);
+  const driveObj = await putWholeFileToGoogle(uploadUrl, filePath, 'model/vnd.usdz+zip');
+  return driveObj; // { id, webViewLink?, webContentLink? }
 }

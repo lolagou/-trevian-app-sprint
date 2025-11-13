@@ -1,4 +1,4 @@
-// app/scan.tsx (o donde tengas tu Scan actual)
+// app/scan.tsx
 import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
@@ -11,23 +11,34 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { ObjectCaptureModule } from '../nativeModules/ObjectCaptureModule';
 import CTAButton from '../components/CTAButton';
-import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
-import { uploadFootModel } from '../lib/uploadFootModel';
+
+// ⬇️ uploader a Drive (usa /drive/init del backend + PUT a Google)
+import { uploadFootModelToDrive } from '../lib/uploadFootModel';
 
 export default function Scan() {
   const router = useRouter();
-  const { side = 'right' } = useLocalSearchParams<{ side?: 'right' | 'left' }>();
+  const { side = 'right', jobId: jobIdParam } = useLocalSearchParams<{
+    side?: 'right' | 'left';
+    jobId?: string;
+  }>();
+
+  // jobId estable durante todo el flujo
+  const jobIdRef = useRef<string>(
+    typeof jobIdParam === 'string' && jobIdParam.length ? jobIdParam : String(Date.now())
+  );
+
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const [loading, setLoading] = useState(false);
+  const isMounted = useRef(true);
 
   useEffect(() => {
-    Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 800,
-      useNativeDriver: true,
-    }).start();
+    Animated.timing(fadeAnim, { toValue: 1, duration: 800, useNativeDriver: true }).start();
+    return () => {
+      isMounted.current = false;
+    };
   }, []);
 
   const handleScan = async () => {
@@ -36,51 +47,60 @@ export default function Scan() {
         Alert.alert('Función no disponible', 'Solo funciona en iPhones con LiDAR');
         return;
       }
-
+      if (loading) return; // evita doble tap
       setLoading(true);
 
-      // 1) Escanear con LiDAR
+      // 1) Escaneo con LiDAR -> retorna file://...
       const filePath = await ObjectCaptureModule.startObjectCapture();
+      if (!filePath) {
+        throw new Error('El escaneo fue cancelado.');
+      }
       console.log('Archivo capturado en:', filePath);
 
-      // 2) Subir al backend (Supabase)
-      const { publicUrl, storagePath } = await uploadFootModel(
+      // 2) Subida a Google Drive (resumable) vía backend liviano
+      const driveRes = await uploadFootModelToDrive(
         filePath,
-        side === 'right' ? 'right' : 'left'
+        side === 'right' ? 'right' : 'left',
+        { jobId: jobIdRef.current }
       );
-      console.log('Subido a:', storagePath, publicUrl);
+      console.log('Subido a Drive:', driveRes?.id, driveRes?.webViewLink);
 
-      // 3) Navegar según el pie
+      // 3) Navegación según el pie (siempre pasar jobId)
       if (side === 'right') {
-        // ya subimos pie derecho → ir a pantalla de "escaneá el izquierdo"
-        router.push('/pieizquierdo');
+        // Continuar con pie izquierdo
+        router.replace({
+          pathname: '/pieizquierdo',
+          params: { jobId: jobIdRef.current, side: 'left' },
+        });
       } else {
-        // ya subimos pie izquierdo → ir a pantalla loader "analizando"
-        router.push('/finaloader');
+        // Ir al loader que hace polling y redirige cuando la IA termina
+        router.replace({
+          pathname: '/finaloader',
+          params: { jobId: jobIdRef.current },
+        });
       }
     } catch (err: any) {
       console.error('Error en escaneo/subida:', err);
       Alert.alert('Error', err?.message ?? 'Ocurrió un problema al capturar o guardar el modelo.');
     } finally {
-      setLoading(false);
+      if (isMounted.current) setLoading(false);
     }
   };
 
   return (
     <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
-      {/* Botón para volver al Dashboard */}
-      <TouchableOpacity
-        onPress={() => router.push('/dashboard')}
-        style={styles.dashboardButton}
-      >
+      {/* Volver a dashboard */}
+      <TouchableOpacity onPress={() => router.push('/dashboard')} style={styles.dashboardButton}>
         <View style={styles.iconContainer}>
           <FontAwesome6 name="user-large" size={20} color="#CBFFEF" />
         </View>
       </TouchableOpacity>
 
+      {/* UI de guía */}
       <View style={styles.topBar} />
       <View style={styles.captureFrame} />
 
+      {/* Estado de subida */}
       {loading && (
         <View style={{ alignItems: 'center', marginBottom: 16 }}>
           <ActivityIndicator color="#6DFFD5" />
@@ -92,10 +112,10 @@ export default function Scan() {
         </View>
       )}
 
-      <CTAButton
-        label="CONTINUAR"
-        onPress={handleScan}
-      />
+      {/* Botón principal */}
+      <TouchableOpacity activeOpacity={loading ? 1 : 0.7} disabled={loading}>
+  <CTAButton label={loading ? 'SUBIENDO…' : 'CONTINUAR'} onPress={handleScan} />
+</TouchableOpacity>
     </Animated.View>
   );
 }

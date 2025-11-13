@@ -2,44 +2,44 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, ActivityIndicator, StyleSheet, Alert } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { uploadFootModel } from '../lib/uploadFootModel';
+import { uploadFootModelToDrive } from '../lib/uploadFootModel'; // 👈 NUEVO
 
 export default function Result() {
   const router = useRouter();
-  const { filePath, side = 'right' } = useLocalSearchParams<{
+  const { filePath, side = 'right', jobId } = useLocalSearchParams<{
     filePath?: string;
     side?: 'right' | 'left';
+    jobId?: string; // opcional
   }>();
 
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const run = async () => {
+    (async () => {
       try {
-        if (!filePath) {
-          throw new Error('Falta filePath en params');
-        }
+        if (!filePath) throw new Error('Falta filePath en params');
+        const currentJobId = jobId || String(Date.now());
 
-        // 👣 SUBIDA A SUPABASE
-        await uploadFootModel(filePath as string, side === 'left' ? 'left' : 'right');
+        // 🚀 Subida a Drive
+        const driveRes = await uploadFootModelToDrive(
+          filePath,
+          side === 'left' ? 'left' : 'right',
+          { jobId: currentJobId }
+        );
+        console.log('Subido a Drive:', driveRes);
 
-        // ✔️ Decidir siguiente pantalla
+        // 👉 Redirección según el pie
         if (side === 'right') {
-          // después del pie derecho → intro pie izquierdo
-          router.replace('/pieizquierdo');
+          router.replace({ pathname: '/pieizquierdo', params: { jobId: currentJobId } });
         } else {
-          // después del pie izquierdo → loader analizando
-          router.replace('/finaloader');
+          router.replace({ pathname: '/finaloader', params: { jobId: currentJobId } });
         }
       } catch (e: any) {
-        console.log(e);
         const msg = e?.message ?? 'Error al subir el modelo';
         setError(msg);
         Alert.alert('Error', msg);
       }
-    };
-
-    run();
+    })();
   }, []);
 
   return (
