@@ -11,11 +11,10 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { ObjectCaptureModule } from '../nativeModules/ObjectCaptureModule';
 import CTAButton from '../components/CTAButton';
-
-// ⬇️ uploader a Drive (usa /drive/init del backend + PUT a Google)
 import { uploadFootModelToDrive } from '../lib/uploadFootModel';
 
 export default function Scan() {
@@ -25,14 +24,32 @@ export default function Scan() {
     jobId?: string;
   }>();
 
-  // jobId estable durante todo el flujo
+  // jobId estable para derecho+izquierdo
   const jobIdRef = useRef<string>(
-    typeof jobIdParam === 'string' && jobIdParam.length ? jobIdParam : String(Date.now())
+    typeof jobIdParam === 'string' && jobIdParam.length
+      ? jobIdParam
+      : String(Date.now())
   );
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const [loading, setLoading] = useState(false);
   const isMounted = useRef(true);
+
+  const [userName, setUserName] = useState<string>('SIN_NOMBRE');
+
+  // 🧠 Cargar nombre de usuario (si lo tenés guardado)
+  useEffect(() => {
+    (async () => {
+      try {
+        const stored = await AsyncStorage.getItem('userName');
+        if (stored) {
+          setUserName(stored);
+        }
+      } catch (e) {
+        console.warn('No se pudo leer userName de AsyncStorage', e);
+      }
+    })();
+  }, []);
 
   useEffect(() => {
     Animated.timing(fadeAnim, { toValue: 1, duration: 800, useNativeDriver: true }).start();
@@ -47,33 +64,37 @@ export default function Scan() {
         Alert.alert('Función no disponible', 'Solo funciona en iPhones con LiDAR');
         return;
       }
-      if (loading) return; // evita doble tap
+      if (loading) return;
       setLoading(true);
 
-      // 1) Escaneo con LiDAR -> retorna file://...
+      // 1) Escanear → file://...
       const filePath = await ObjectCaptureModule.startObjectCapture();
       if (!filePath) {
         throw new Error('El escaneo fue cancelado.');
       }
-      console.log('Archivo capturado en:', filePath);
+      console.log('📍 Archivo capturado:', filePath);
 
-      // 2) Subida a Google Drive (resumable) vía backend liviano
+      // 2) Subir a Drive vía backend (Service Account)
       const driveRes = await uploadFootModelToDrive(
         filePath,
         side === 'right' ? 'right' : 'left',
-        { jobId: jobIdRef.current }
+        {
+          jobId: jobIdRef.current,
+          userName, // 👈 se lo mandás al backend
+        }
       );
-      console.log('Subido a Drive:', driveRes?.id, driveRes?.webViewLink);
 
-      // 3) Navegación según el pie (siempre pasar jobId)
+      console.log('⬆ Subido a Drive:', driveRes);
+
+      // 3) Flujo de navegación
       if (side === 'right') {
-        // Continuar con pie izquierdo
+        // ahora escaneo pie izquierdo
         router.replace({
           pathname: '/pieizquierdo',
           params: { jobId: jobIdRef.current, side: 'left' },
         });
       } else {
-        // Ir al loader que hace polling y redirige cuando la IA termina
+        // ya tengo ambos → voy al loader de IA
         router.replace({
           pathname: '/finaloader',
           params: { jobId: jobIdRef.current },
@@ -81,7 +102,10 @@ export default function Scan() {
       }
     } catch (err: any) {
       console.error('Error en escaneo/subida:', err);
-      Alert.alert('Error', err?.message ?? 'Ocurrió un problema al capturar o guardar el modelo.');
+      Alert.alert(
+        'Error',
+        err?.message ?? 'Ocurrió un problema al capturar o guardar el modelo.'
+      );
     } finally {
       if (isMounted.current) setLoading(false);
     }
@@ -114,8 +138,11 @@ export default function Scan() {
 
       {/* Botón principal */}
       <TouchableOpacity activeOpacity={loading ? 1 : 0.7} disabled={loading}>
-  <CTAButton label={loading ? 'SUBIENDO…' : 'CONTINUAR'} onPress={handleScan} />
-</TouchableOpacity>
+        <CTAButton
+          label={loading ? 'SUBIENDO…' : 'CONTINUAR'}
+          onPress={handleScan}
+        />
+      </TouchableOpacity>
     </Animated.View>
   );
 }
