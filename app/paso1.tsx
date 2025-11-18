@@ -62,18 +62,6 @@ export default function Scan() {
         onPress={handleScan}
       />
 
-<CTAButton
-  label="final"
-  onPress={() => {
-    router.push({
-      pathname: '/finaloader',
-      params: {
-        jobId: 'demo-test', // 🧪 un jobId fake para que la pantalla ande
-      },
-    });
-  }}
-/>
-
     </Animated.View>
   );
 }
