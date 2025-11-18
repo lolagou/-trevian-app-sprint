@@ -21,6 +21,8 @@ import IconButton from '../components/IconButton';
 import { Ionicons } from '@expo/vector-icons';
 import { useFonts } from 'expo-font';
 import AppLoading from 'expo-app-loading';
+import { Pressable } from 'react-native';
+
 
 const API_BASE = 'https://trevian-server.vercel.app';
 const DEMO_MODE = false; // 🔁 ponelo en true si querés usar usuario/clave 1234
@@ -153,11 +155,13 @@ export default function Login() {
     >
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1 }}>
         <Animated.View style={{ opacity: fadeAnim }}>
-          <Image
-            source={require('../assets/Back.png')}
-            style={{ width: 130, height: 40 }}
-            resizeMode="contain"
-          />
+        <Pressable onPress={() => router.back()} hitSlop={12}>
+  <Image
+    source={require('../assets/Back.png')}
+    style={{ width: 130, height: 40 }}
+    resizeMode="contain"
+  />
+</Pressable>
           <Text style={styles.header}>INICIO DE SESIÓN</Text>
 
           <View style={styles.form}>

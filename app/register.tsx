@@ -21,6 +21,7 @@ import IconButton from '../components/IconButton';
 import { Ionicons } from '@expo/vector-icons';
 import { useFonts } from 'expo-font';
 import AppLoading from 'expo-app-loading';
+import { Pressable } from 'react-native';
 
 
 export default function Register() {
@@ -106,11 +107,13 @@ export default function Register() {
         style={{ flex: 1 }}
       >
         <Animated.View style={{ opacity: fadeAnim }}>
-          <Image
-            source={require('../assets/Back.png')}
-            style={{ width: 100, height: 30 }}
-            resizeMode="contain"
-          />
+        <Pressable onPress={() => router.back()} hitSlop={12}>
+  <Image
+    source={require('../assets/Back.png')}
+    style={{ width: 130, height: 40 }}
+    resizeMode="contain"
+  />
+</Pressable>
           <Text style={styles.header}>REGISTRO</Text>
 
           <View style={styles.form}>
