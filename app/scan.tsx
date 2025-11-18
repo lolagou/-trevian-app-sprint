@@ -80,9 +80,10 @@ export default function Scan() {
         side === 'right' ? 'right' : 'left',
         {
           jobId: jobIdRef.current,
-          userName, // 👈 se lo mandás al backend
+          userName, 
         }
       );
+      
 
       console.log('⬆ Subido a Drive:', driveRes);
 

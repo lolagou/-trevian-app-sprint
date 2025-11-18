@@ -1,9 +1,9 @@
-
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, Animated, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Animated, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { fetchProcessingStatus, ProcessingStatus } from '../lib/processing';
+import CTAButton from '../components/CTAButton';
 
 export default function AnalizandoModelo() {
   const router = useRouter();
@@ -21,17 +21,30 @@ export default function AnalizandoModelo() {
   const isMounted = useRef(true);
   const didNavigate = useRef(false);
 
-  // Animación de la barrita
+  // Animación de la barrita + plantilla
   useEffect(() => {
-    Animated.timing(progress, {
-      toValue: 1,
-      duration: 4000,
-      useNativeDriver: false,
-    }).start();
+    Animated.sequence([
+      Animated.timing(progress, {
+        toValue: 1,
+        duration: 2500,
+        useNativeDriver: false,
+      }),
+      Animated.timing(progress, {
+        toValue: 0.5,
+        duration: 2000,
+        useNativeDriver: false,
+      }),
+    ]).start(() => {
+      // 🔚 forzamos frame final centrado
+      progress.setValue(0.5);
+    });
+  
     return () => {
       isMounted.current = false;
     };
   }, []);
+  
+  
 
   // Polling al backend
   useEffect(() => {
@@ -56,14 +69,12 @@ export default function AnalizandoModelo() {
         if (!isMounted.current) return;
 
         if (st.status === 'done') {
-          // ✅ Guardamos info del archivo final y marcamos como terminado
           setReady({
             fileIdFinal: st.fileIdFinal,
             webViewLink: st.webViewLink,
             webContentLink: st.webContentLink,
           });
           setFinished(true);
-          // 👀 Acá YA NO navegamos. Eso lo hace el botón CONTINUAR.
           return;
         }
 
@@ -81,13 +92,11 @@ export default function AnalizandoModelo() {
       }
     };
 
-    // timeout global
     timeoutHandle = setTimeout(() => {
       if (!isMounted.current) return;
       setError('Se excedió el tiempo de espera (20 min). Intentalo de nuevo.');
     }, TIMEOUT);
 
-    // primer tick
     schedule();
 
     return () => {
@@ -101,6 +110,18 @@ export default function AnalizandoModelo() {
     outputRange: ['10%', '100%'],
   });
 
+  const rotateInterpolated = progress.interpolate({
+    inputRange: [0, 0.5, 1],
+    outputRange: ['-15deg', '0deg', '15deg'], // 👈 0deg está en el medio
+  });
+  
+  
+
+  const scaleInterpolated = progress.interpolate({
+    inputRange: [0, 0.5, 1],
+    outputRange: [1, 1.05, 1],
+  });
+
   return (
     <LinearGradient colors={['#02001A', '#02001A']} style={styles.container}>
       <Image
@@ -108,63 +129,48 @@ export default function AnalizandoModelo() {
         style={styles.background}
         resizeMode="cover"
       />
+
       <Text style={styles.title}>PROCESANDO MODELO</Text>
 
+      {/* Centro: plantilla animada sola, sin borde ni card */}
       <View style={styles.center}>
-        <Animated.View
+        <Animated.Image
+          source={require('../assets/plantilla.png')}
           style={[
-            styles.card,
+            styles.plantillaImage,
             {
               transform: [
-                {
-                  rotate: progress.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: ['-15deg', '15deg'],
-                  }),
-                },
+                { rotate: rotateInterpolated },
+                { scale: scaleInterpolated },
               ],
             },
           ]}
+          resizeMode="contain"
         />
-        <View style={styles.shadow} />
       </View>
 
-      {!finished ? (
-        <View style={styles.bottomTextBox}>
-          <Text style={styles.bottomText}>Nuestra inteligencia artificial ya está</Text>
-          <Text style={styles.bottomText}>procesando el modelo</Text>
-        </View>
-      ) : (
-        <View style={styles.bottomTextBox}>
-          <Text style={styles.bottomText}>¡Procesamiento finalizado!</Text>
-        </View>
-      )}
-
-      {/* Barra de progreso mientras no haya error ni haya terminado */}
-      {!finished && !error && (
-        <View style={styles.progressWrapper}>
-          <View style={styles.barBackground}>
-            <Animated.View style={[styles.barFill, { width: widthInterpolated }]} />
+      {/* Zona inferior: texto + CTA + barra */}
+      <View style={styles.bottomArea}>
+        {/* Texto arriba del botón */}
+        {!finished ? (
+          <View style={styles.bottomTextBox}>
+            <Text style={styles.bottomText}>Nuestra inteligencia artificial ya está</Text>
+            <Text style={styles.bottomText}>procesando el modelo</Text>
           </View>
-          <View style={styles.smallBar} />
-        </View>
-      )}
+        ) : !error ? (
+          <View style={styles.bottomTextBox}>
+            <Text style={styles.bottomText}>¡Procesamiento finalizado!</Text>
+          </View>
+        ) : (
+          <View style={styles.bottomTextBox}>
+            <Text style={[styles.bottomText, { color: 'tomato' }]}>{error}</Text>
+          </View>
+        )}
 
-      {/* Mensaje + botón de reintentar si hay error */}
-      {error && (
-        <View
-          style={{
-            position: 'absolute',
-            bottom: 80,
-            paddingHorizontal: 24,
-            alignItems: 'center',
-          }}
-        >
-          <Text style={{ color: 'tomato', textAlign: 'center', marginBottom: 10 }}>
-            {error}
-          </Text>
-          <TouchableOpacity
-            style={styles.continueButton}
+        {/* CTA: CONTINUAR o REINTENTAR con CTAButton */}
+        {error && (
+          <CTAButton
+            label="REINTENTAR"
             onPress={() => {
               if (!didNavigate.current) {
                 didNavigate.current = true;
@@ -174,35 +180,38 @@ export default function AnalizandoModelo() {
                 });
               }
             }}
-            activeOpacity={0.9}
-          >
-            <Text style={styles.continueText}>REINTENTAR</Text>
-          </TouchableOpacity>
-        </View>
-      )}
+          />
+        )}
 
-      {/* Cuando ya terminó y tenemos el archivo final → botón CONTINUAR a /pago */}
-      {finished && ready && !error && (
-        <TouchableOpacity
-          style={styles.continueButton}
-          onPress={() => {
-            if (didNavigate.current) return;
-            didNavigate.current = true;
-            router.replace({
-              pathname: '/pago',
-              params: {
-                fileIdFinal: ready.fileIdFinal,
-                webViewLink: ready.webViewLink || '',
-                webContentLink: ready.webContentLink || '',
-                jobId: jobId || '',
-              },
-            });
-          }}
-          activeOpacity={0.9}
-        >
-          <Text style={styles.continueText}>CONTINUAR</Text>
-        </TouchableOpacity>
-      )}
+        {finished && ready && !error && (
+          <CTAButton
+            label="CONTINUAR"
+            onPress={() => {
+              if (didNavigate.current) return;
+              didNavigate.current = true;
+              router.replace({
+                pathname: '/pago',
+                params: {
+                  fileIdFinal: ready.fileIdFinal,
+                  webViewLink: ready.webViewLink || '',
+                  webContentLink: ready.webContentLink || '',
+                  jobId: jobId || '',
+                },
+              });
+            }}
+          />
+        )}
+
+        {/* Barra de progreso mientras no haya error ni haya terminado */}
+        {!finished && !error && (
+          <View style={styles.progressWrapper}>
+            <View style={styles.barBackground}>
+              <Animated.View style={[styles.barFill, { width: widthInterpolated }]} />
+            </View>
+            <View style={styles.smallBar} />
+          </View>
+        )}
+      </View>
     </LinearGradient>
   );
 }
@@ -215,7 +224,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     overflow: 'hidden',
   },
-  background: { position: 'absolute', width: 600, height: 1000, top: -100, left: -100 },
+  background: {
+    position: 'absolute',
+    width: 600,
+    height: 1000,
+    top: -100,
+    left: -100,
+  },
   title: {
     position: 'absolute',
     top: 90,
@@ -224,21 +239,35 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     letterSpacing: 1,
   },
-  center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  card: { width: 160, height: 220, backgroundColor: '#6DFFD5', borderRadius: 24 },
-  shadow: {
-    width: 200,
-    height: 40,
-    borderRadius: 40,
-    backgroundColor: 'rgba(0,0,0,0.35)',
-    marginTop: 20,
-    opacity: 0.7,
+  center: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  bottomTextBox: { marginBottom: 7, alignItems: 'center' },
-  bottomText: { color: '#FFFFFF', fontSize: 14, textAlign: 'center' },
-  progressWrapper: {
+  // imagen sola, sin fondo ni borde
+  plantillaImage: {
+    width: 160,
+    height: 220,
+    backgroundColor: 'transparent',
+  },
+  bottomArea: {
     position: 'absolute',
     bottom: 40,
+    width: '100%',
+    alignItems: 'center',
+  },
+  bottomTextBox: {
+    alignItems: 'center',
+    marginBottom: 12,
+    paddingHorizontal: 24,
+  },
+  bottomText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    textAlign: 'center',
+  },
+  progressWrapper: {
+    marginTop: 12,
     width: '100%',
     alignItems: 'center',
     gap: 10,
@@ -251,16 +280,16 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     flexDirection: 'row',
   },
-  barFill: { height: '100%', borderRadius: 999, backgroundColor: '#6DFFD5' },
-  smallBar: { width: '35%', height: 4, borderRadius: 999, backgroundColor: '#FFFFFF' },
-  continueButton: {
-    position: 'absolute',
-    bottom: 60,
+  barFill: {
+    height: '100%',
+    borderRadius: 999,
     backgroundColor: '#6DFFD5',
-    paddingVertical: 12,
-    paddingHorizontal: 60,
-    borderRadius: 12,
-    elevation: 5,
   },
-  continueText: { color: '#05003F', fontWeight: '700', fontSize: 16 },
+  smallBar: {
+    width: '35%',
+    height: 4,
+    borderRadius: 999,
+    backgroundColor: '#FFFFFF',
+  },
 });
+

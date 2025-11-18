@@ -111,10 +111,14 @@ export default function Pago({ navigation, price = 89900 }: PagoProps) {
 
           {/* Card Preview + Precio (TRANSPARENTE) */}
           <GhostCard lineColor={LINE}>
-            <View style={styles.previewBox}>
-              <View style={styles.previewPlaceholder}>
-              </View>
-            </View>
+          <View style={styles.previewBox}>
+  <Image
+    source={require('../assets/plantilla.png')}
+    style={styles.previewPlantilla}
+    resizeMode="contain"
+  />
+</View>
+
 
             <View style={{ marginTop: 16 }}>
             <Text style={styles.previewText}>Previsualización del modelo 3D</Text>
@@ -200,12 +204,22 @@ const styles = StyleSheet.create({
 
   brandIcon: { width: 24, height: 16, marginRight: 8 },
   pillText: { fontSize: 14, color: '#D2FFF2', fontFamily: 'Onest-Medium', letterSpacing: 0.3 },
-  previewBox: { width: '100%', borderRadius: 14, overflow: 'hidden', borderWidth: 1, borderColor: '#929292', backgroundColor: '#929292' },
-  previewPlaceholder: { height: 220, alignItems: 'center', justifyContent: 'center' },
+  previewBox: { },
+  previewPlaceholder: { height: 220, alignItems: 'center', justifyContent: 'center', },
   previewText: { fontSize: 14, color: '#A7A7A7', fontFamily: 'Onest-Medium' },
   priceLabel: { fontSize: 16, fontFamily: 'Onest-ExtraBold', color: '#D2FFF2' },
   priceValue: { fontSize: 24, fontFamily: 'Onest-ExtraBold', color: '#6DFFD5', letterSpacing: 0.32, marginTop: 4 },
   note: { textAlign: 'center', fontSize: 12, color: '#D2FFF299', fontFamily: 'Onest-Medium', marginTop: 12 },
+
+  previewPlantilla: {
+    width: '100%',
+    height: 240, // 📏 mismo alto aproximado que la previa original
+    backgroundColor: 'transparent',
+    alignSelf: 'center',
+  },
+
+  
+  
 });
 
 

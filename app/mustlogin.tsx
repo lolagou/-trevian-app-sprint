@@ -30,7 +30,7 @@ export default function MustLogin() {
 
       <View style={styles.overlay}>
         <Image
-          source={require('../assets/prohibido.png')}
+          source={require('../assets/plantillanot.png')}
           style={styles.lockImage}
           resizeMode="contain"
         />

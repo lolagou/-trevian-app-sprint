@@ -51,11 +51,6 @@ export default function Scan() {
         onPress={() => router.push('/dashboard')}
         style={styles.dashboardButton}
       >
-<View style={styles.iconContainer}>
-  <View style={styles.iconCircle}>
-    <FontAwesome6 name="user-large" size={15} color="#CBFFEF" />
-  </View>
-</View>
       </TouchableOpacity>
 
       <Text style={styles.title}>ESCANEANDO TU PIE</Text>
@@ -63,9 +58,22 @@ export default function Scan() {
 
 
       <CTAButton
-        label={`CONTINUAR (${side === 'right' ? 'pie derecho' : 'pie izquierdo'})`}
+        label={`CONTINUAR`}
         onPress={handleScan}
       />
+
+<CTAButton
+  label="final"
+  onPress={() => {
+    router.push({
+      pathname: '/finaloader',
+      params: {
+        jobId: 'demo-test', // 🧪 un jobId fake para que la pantalla ande
+      },
+    });
+  }}
+/>
+
     </Animated.View>
   );
 }

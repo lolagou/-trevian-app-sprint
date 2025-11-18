@@ -9,17 +9,11 @@ import {
   Image,
   Dimensions,
 } from 'react-native';
-import { GLView } from 'expo-gl';
 import { useRouter } from 'expo-router';
-import * as THREE from 'three';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-import { Asset } from 'expo-asset';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Renderer } from 'expo-three';
-import 'react-native-url-polyfill/auto';
 import { useFonts } from 'expo-font';
-import FontAwesome6 from '@expo/vector-icons/FontAwesome6'; // 👈 agregado
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 
 const { width } = Dimensions.get('window');
 
@@ -33,9 +27,10 @@ export default function IndexScreen() {
   const router = useRouter();
   const [showLogo, setShowLogo] = useState(true);
   const [showGradient, setShowGradient] = useState(true);
-  const [showShadow, setShowShadow] = useState(false);
-  const [showCube, setShowCube] = useState(false);
+  const [showShadow, setShowShadow] = useState(false); // la podés borrar si querés
+  const [showCube, setShowCube] = useState(false); // ahora controla la plantilla
   const [showUI, setShowUI] = useState(false);
+
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const uiY = useRef(new Animated.Value(100)).current;
   const cubeY = useRef(new Animated.Value(200)).current;
@@ -173,79 +168,19 @@ export default function IndexScreen() {
               opacity: cubeOpacity,
               position: 'absolute',
               top: '34%',
-              width: '30%',
-              height: 150,
+              width: '40%',
+              height: 180,
               zIndex: 20,
               alignItems: 'center',
             }}
           >
-            <GLView
-              style={{ width: '100%', height: '100%' }}
-              onContextCreate={async (gl: any) => {
-                const scene = new THREE.Scene();
-                const camera = new THREE.PerspectiveCamera(
-                  75,
-                  gl.drawingBufferWidth / gl.drawingBufferHeight,
-                  0.1,
-                  1000
-                );
-                camera.position.z = 1;
-
-                const renderer = new Renderer({ gl });
-                renderer.setSize(gl.drawingBufferWidth, gl.drawingBufferHeight);
-
-                const dpr =
-                  typeof window !== 'undefined' && (window as any).devicePixelRatio
-                    ? (window as any).devicePixelRatio
-                    : 1;
-                renderer.setPixelRatio(dpr);
-
-                scene.add(new THREE.AmbientLight(0xffffff, 1.2));
-                const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
-                dirLight.position.set(5, 5, 5);
-                scene.add(dirLight);
-
-                const asset = Asset.fromModule(require('../assets/models/Cube.glb'));
-                await asset.downloadAsync();
-
-                const loader = new GLTFLoader();
-                loader.load(
-                  asset.localUri || asset.uri,
-                  (gltf: any) => {
-                    const model: THREE.Object3D = gltf.scene;
-
-                    model.scale.set(1, 1, 1);
-                    model.position.y = 0;
-
-                    model.traverse((child: any) => {
-                      if (child.isMesh) {
-                        const mat = child.material as THREE.MeshStandardMaterial;
-                        mat.color.set(ACCENT);
-                        mat.needsUpdate = true;
-                      }
-                    });
-
-                    scene.add(model);
-
-                    const animate = () => {
-                      requestAnimationFrame(animate);
-                      model.rotation.y += 0.01;
-                      model.rotation.x += 0.005;
-                      renderer.render(scene, camera);
-                      gl.endFrameEXP();
-                    };
-                    animate();
-                  },
-                  undefined,
-                  (error: any) => console.error('Error al cargar .glb:', error)
-                );
-              }}
-            />
+            {/* 👉 Reemplazo del cubo GLB por imagen de la plantilla */}
             <Image
-              source={require('../assets/shadow-light.png')}
-              style={styles.shadowImage}
+              source={require('../assets/plantilla.png')}
+              style={styles.plantillaImage}
               resizeMode="contain"
             />
+
             <Text
               style={{
                 color: TEXT_COLOR,
@@ -320,6 +255,7 @@ const styles = StyleSheet.create({
 
   logoContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   logo: { width: 120, height: 36 },
+
   gradientContainer: {
     position: 'absolute',
     top: 0,
@@ -336,6 +272,15 @@ const styles = StyleSheet.create({
     transform: [{ translateX: 20 }, { translateY: 30 }],
     opacity: 1,
   },
+
+  // 👉 nueva imagen de la plantilla
+  plantillaImage: {
+    width: width * 0.8,  // 🔹 80% del ancho de la pantalla
+    height: width * 0.8 * 0.55, // 🔹 mantiene proporción aprox. plantilla (ajustable)
+    marginBottom: 8,
+    alignSelf: 'center',
+  },
+
   shadowImage: {
     width: 250,
     height: 70,
